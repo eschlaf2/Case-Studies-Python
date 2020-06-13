@@ -30,6 +30,8 @@
     <script >var togglebuttonSelector = '.toggle, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.18.0/dist/embed-amd.js"></script>
+    <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
+    <script async="async" src="_static/thebelab.js"></script>
     <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="canonical" href="https://mark-kramer.github.io/Case-Studies-Python/03.html" />
     <link rel="shortcut icon" href="_static/favicon.ico"/>
@@ -195,6 +197,7 @@
                 <a class="binder-button" href="https://mybinder.org/v2/gh/eschlaf2/Case-Studies-Python/master?urlpath=tree/_book/03.ipynb"><button type="button" class="btn btn-secondary topbarbtn" title="Launch Binder" data-toggle="tooltip" data-placement="left"><img class="binder-button-logo" src="_static/images/logo_binder.svg" alt="Interact on binder">Binder</button></a>
                 
                 
+                <button type="button" class="btn btn-secondary topbarbtn thebelab-launch-button" onclick="initThebelab()" title="Launch Thebelab" data-toggle="tooltip" data-placement="left"><i class="fas fa-rocket"></i><span style="margin-left: .4em;">ThebeLab</span></button>
                 
             </div>
         </div>
@@ -294,6 +297,7 @@
 <p><strong>Goal:</strong> Characterize the observed rhythms in these data.</p>
 <p><strong>Tools:</strong> Fourier transform, power spectral density, spectrogram.</p>
 </div><ul class="simple">
+<li><p><a class="reference external" href="#onramp">On-ramp</a></p></li>
 <li><p><a class="reference external" href="#.">Introduction</a></p></li>
 <li><p><a class="reference external" href="#data-analysis">Data analysis</a></p>
 <ol class="simple">
@@ -327,11 +331,7 @@
 <div class="cell_input docutils container">
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import the usual suspects ...</span>
 <span class="kn">from</span> <span class="nn">scipy.io</span> <span class="kn">import</span> <span class="n">loadmat</span>                    <span class="c1"># To load .mat files</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>                 <span class="c1"># Load plotting functions</span>
 <span class="kn">from</span> <span class="nn">pylab</span> <span class="kn">import</span> <span class="o">*</span>                             <span class="c1"># Import plotting functions</span>
-<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="o">*</span>                             <span class="c1"># Import numerical functions</span>
-<span class="kn">from</span> <span class="nn">IPython.core.pylabtools</span> <span class="kn">import</span> <span class="n">figsize</span>     <span class="c1"># Allow us to change figure sizes</span>
-<span class="kn">from</span> <span class="nn">IPython.core.display</span> <span class="kn">import</span> <span class="n">HTML</span>           <span class="c1"># Package for manipulating appearance of notebooks</span>
 <span class="kn">from</span> <span class="nn">IPython.lib.display</span> <span class="kn">import</span> <span class="n">YouTubeVideo</span>    <span class="c1"># Package for displaying YouTube videos</span>
 </pre></div>
 </div>
@@ -339,7 +339,7 @@
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># ... and the tools that we will need for this chapter</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># ... and the tools that we will need for this notebook</span>
 <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">where</span>
 <span class="kn">from</span> <span class="nn">numpy.fft</span> <span class="kn">import</span> <span class="n">fft</span><span class="p">,</span> <span class="n">rfft</span>
 <span class="kn">from</span> <span class="nn">scipy.signal</span> <span class="kn">import</span> <span class="n">spectrogram</span>
@@ -348,10 +348,11 @@
 </div>
 </div>
 <div class="python-note">
-<p>Note that the NumPy functions imported in cell number 2 were already imported in the first cell. We explicitly imported them in the second cell so that it’s clear that these functions are from the NumPy module.</p>
-</div><div class="section" id="on-ramp-computing-the-spectrum-in-python">
+<p>Note that the NumPy functions imported in cell number 2 were already imported as part of pylab. We explicitly imported them again so that it’s clear that these functions are from the NumPy module.</p>
+</div><p><a id="onramp"></a></p>
+<div class="section" id="on-ramp-computing-the-spectrum-in-python">
 <h2>On-ramp: computing the  spectrum in Python<a class="headerlink" href="#on-ramp-computing-the-spectrum-in-python" title="Permalink to this headline">¶</a></h2>
-<p>We begin this module with an “<em>on-ramp</em>” to analysis. The purpose of this on-ramp is to introduce you immediately to a core concept in this module: how to compute a spectrum in Python. You may not understand all aspects of the program here, but that’s not the point. Instead, the purpose of this on-ramp is to illustrate what <em>can</em> be done. Our advice is to simply run the code below and see what happens …</p>
+<p>We begin this notebook with an “<em>on-ramp</em>” to analysis. The purpose of this on-ramp is to introduce you immediately to a core concept in this notebook: how to compute a spectrum in Python. You may not understand all aspects of the program here, but that’s not the point. Instead, the purpose of this on-ramp is to illustrate what <em>can</em> be done. Our advice is to simply run the code below and see what happens …</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">loadmat</span><span class="p">(</span><span class="s1">&#39;matfiles/EEG-1.mat&#39;</span><span class="p">)</span>  <span class="c1"># Load the EEG data</span>
@@ -369,7 +370,7 @@
 
 <span class="n">df</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">T</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>  <span class="c1"># Determine frequency resolution</span>
 <span class="n">fNQ</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">dt</span> <span class="o">/</span> <span class="mi">2</span>  <span class="c1"># Determine Nyquist frequency</span>
-<span class="n">faxis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">fNQ</span><span class="p">,</span><span class="n">df</span><span class="p">)</span>  <span class="c1"># Construct frequency axis</span>
+<span class="n">faxis</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">fNQ</span><span class="p">,</span><span class="n">df</span><span class="p">)</span>  <span class="c1"># Construct frequency axis</span>
 
 <span class="n">plot</span><span class="p">(</span><span class="n">faxis</span><span class="p">,</span> <span class="n">Sxx</span><span class="o">.</span><span class="n">real</span><span class="p">)</span>  <span class="c1"># Plot spectrum vs frequency</span>
 <span class="n">xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">])</span>  <span class="c1"># Select frequency range</span>
@@ -392,7 +393,6 @@
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">YouTubeVideo</span><span class="p">(</span><span class="s1">&#39;PmGme7YuAiw&#39;</span><span class="p">)</span>
-<span class="c1"># NO CODE</span>
 </pre></div>
 </div>
 </div>
@@ -407,13 +407,12 @@
 ></iframe>
 </div></div>
 </div>
-<p>In this module, we consider data recorded in the scalp <a class="reference external" href="https://en.wikipedia.org/wiki/Electroencephalography">electroencephalogram</a> or EEG. The EEG provides a measure of brain voltage activity with high temporal resolution (typically on the order of milliseconds) but poor spatial resolution (on the order of 10 cm<sup>2</sup> of cortex). Here we will consider EEG activity recorded from a single scalp electrode. We will analyze these data to determine what (if any) rhythmic activity is present. In doing so, we will learn about an important technique to characterize rhythms in data - the Fourier transform and power spectral density or “spectrum” - and the many subtleties associated with this technique. We begin with a brief description of the data.</p>
+<p>In this notebook, we consider data recorded in the scalp <a class="reference external" href="https://en.wikipedia.org/wiki/Electroencephalography">electroencephalogram</a> or EEG. The EEG provides a measure of brain voltage activity with high temporal resolution (typically on the order of milliseconds) but poor spatial resolution (on the order of 10 cm<sup>2</sup> of cortex). Here we will consider EEG activity recorded from a single scalp electrode. We will analyze these data to determine what (if any) rhythmic activity is present. In doing so, we will learn about an important technique to characterize rhythms in data - the Fourier transform and power spectral density or “spectrum” - and the many subtleties associated with this technique. We begin with a brief description of the data.</p>
 <div class="section" id="case-study-data">
 <h3>Case study data<a class="headerlink" href="#case-study-data" title="Permalink to this headline">¶</a></h3>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">YouTubeVideo</span><span class="p">(</span><span class="s1">&#39;oRCUx11iEck&#39;</span><span class="p">)</span>
-<span class="c1"># NO CODE</span>
 </pre></div>
 </div>
 </div>
@@ -437,7 +436,6 @@ If we find anything interesting in this 2 s snippet, our clinical collaborator h
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">YouTubeVideo</span><span class="p">(</span><span class="s1">&#39;L0xf0dCn7T0&#39;</span><span class="p">)</span>
-<span class="c1"># NO CODE</span>
 </pre></div>
 </div>
 </div>
@@ -452,11 +450,11 @@ If we find anything interesting in this 2 s snippet, our clinical collaborator h
 ></iframe>
 </div></div>
 </div>
-<p>The goal of this chapter is to analyze the 2 s of EEG data by characterizing the observed rhythms. By the end of this chapter, you should be familiar with the principles of the Fourier transform, how to compute the spectrum in Python, and the time-windowed spectrum.</p>
+<p>The goal of this notebook is to analyze the 2 s of EEG data by characterizing the observed rhythms. By the end of this notebook, you should be familiar with the principles of the Fourier transform, how to compute the spectrum in Python, and the time-windowed spectrum.</p>
 </div>
 <div class="section" id="tools">
 <h3>Tools<a class="headerlink" href="#tools" title="Permalink to this headline">¶</a></h3>
-<p>The primary tool developed in this chapter is the Fourier transform. We will learn how to compute the Fourier transform, and the associated spectrum, in Python. We will see that the spectrum provides a powerful technique to assess rhythmic structure in time series data.</p>
+<p>The primary tool developed in this notebook is the Fourier transform. We will learn how to compute the Fourier transform, and the associated spectrum, in Python. We will see that the spectrum provides a powerful technique to assess rhythmic structure in time series data.</p>
 </div>
 </div>
 <div class="section" id="data-analysis-a-id-data-analysis-a">
@@ -482,7 +480,7 @@ If we find anything interesting in this 2 s snippet, our clinical collaborator h
 <span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">EEG</span><span class="p">)</span>  <span class="c1"># Plot the data versus time</span>
 <span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Time [s]&#39;</span><span class="p">)</span>  <span class="c1"># Label the time axis</span>
 <span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Voltage [$\mu V$]&#39;</span><span class="p">)</span>  <span class="c1"># ... and the voltage axis</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">autoscale</span><span class="p">(</span><span class="n">tight</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># Minimize white space</span>
+<span class="n">autoscale</span><span class="p">(</span><span class="n">tight</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># Minimize white space</span>
 <span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;imgs/3-1&#39;</span><span class="p">)</span>
 <span class="n">show</span><span class="p">()</span>
 </pre></div>
@@ -499,7 +497,6 @@ If we find anything interesting in this 2 s snippet, our clinical collaborator h
 </div><div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">YouTubeVideo</span><span class="p">(</span><span class="s1">&#39;GepHsNVXTN4&#39;</span><span class="p">)</span>
-<span class="c1"># NO CODE</span>
 </pre></div>
 </div>
 </div>
@@ -520,7 +517,6 @@ If we find anything interesting in this 2 s snippet, our clinical collaborator h
 </div><div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">YouTubeVideo</span><span class="p">(</span><span class="s1">&#39;mZ1uHN4lcPY&#39;</span><span class="p">)</span>
-<span class="c1"># NO CODE</span>
 </pre></div>
 </div>
 </div>
@@ -544,7 +540,6 @@ If we find anything interesting in this 2 s snippet, our clinical collaborator h
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">YouTubeVideo</span><span class="p">(</span><span class="s1">&#39;UVnpQVUqpWI&#39;</span><span class="p">)</span>
-<span class="c1"># NO CODE</span>
 </pre></div>
 </div>
 </div>
@@ -576,7 +571,6 @@ If we find anything interesting in this 2 s snippet, our clinical collaborator h
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">YouTubeVideo</span><span class="p">(</span><span class="s1">&#39;W9BTYZM8yzs&#39;</span><span class="p">)</span>
-<span class="c1"># NO CODE</span>
 </pre></div>
 </div>
 </div>
@@ -613,7 +607,7 @@ If we find anything interesting in this 2 s snippet, our clinical collaborator h
 </div>
 <div class="section" id="step-2-mean-variance-and-standard-deviation-a-id-mean-a">
 <h3>Step 2: Mean, variance, and standard deviation<a id="mean"></a><a class="headerlink" href="#step-2-mean-variance-and-standard-deviation-a-id-mean-a" title="Permalink to this headline">¶</a></h3>
-<p>As a first step in our analysis of the EEG data, let’s define two of the simplest measures we can use to characterize data <span class="math notranslate nohighlight">\(x\)</span>: the mean and variance <sup><abbr title="We could instead write the sample mean, because we use the observed data to estimate the theoretical mean that we would see if we were to keep repeating this experiment. This distinction is not essential to our goals here, but is important when talking to your statistics-minded colleagues. Throughout this chapter and others, we omit the term “sample” when referring to sample means, variances, covariances, and so forth, unless this distinction becomes essential to our discussion."><em>note</em></abbr></sup>. To estimate the mean <span class="math notranslate nohighlight">\(\bar x\)</span>, or average value, of <span class="math notranslate nohighlight">\(x\)</span> we compute,</p>
+<p>As a first step in our analysis of the EEG data, let’s define two of the simplest measures we can use to characterize data <span class="math notranslate nohighlight">\(x\)</span>: the mean and variance <sup><abbr title="We could instead write the sample mean, because we use the observed data to estimate the theoretical mean that we would see if we were to keep repeating this experiment. This distinction is not essential to our goals here, but is important when talking to your statistics-minded colleagues. Throughout this notebook and others, we omit the term “sample” when referring to sample means, variances, covariances, and so forth, unless this distinction becomes essential to our discussion."><em>note</em></abbr></sup>. To estimate the mean <span class="math notranslate nohighlight">\(\bar x\)</span>, or average value, of <span class="math notranslate nohighlight">\(x\)</span> we compute,</p>
 <p title="Mean">
 $$ \bar x = \frac{1}{N}\sum_{n=1}^N x_n. $$
 </p>
@@ -673,10 +667,9 @@ be similar. One technique to assess the dependent structure in the data is the a
 </div><p>To compute the autocovariance of the EEG data, we execute the following commands<a id="fig:3-4a"></a></p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="n">lags</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">))</span> <span class="c1"># Compute the lags for the full autocovariance vector</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">lags</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">))</span> <span class="c1"># Compute the lags for the full autocovariance vector</span>
                                       <span class="c1"># ... and the autocov for L +/- 100 indices</span>
-<span class="n">ac</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">N</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">correlate</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">x</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">x</span> <span class="o">-</span> <span class="n">x</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;full&#39;</span><span class="p">)</span>
+<span class="n">ac</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">N</span> <span class="o">*</span> <span class="n">correlate</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">x</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">x</span> <span class="o">-</span> <span class="n">x</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;full&#39;</span><span class="p">)</span>
 <span class="n">inds</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">lags</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">100</span>            <span class="c1"># Find the lags that are within 100 time steps</span>
 <span class="n">plot</span><span class="p">(</span><span class="n">lags</span><span class="p">[</span><span class="n">inds</span><span class="p">]</span> <span class="o">*</span> <span class="n">dt</span><span class="p">,</span> <span class="n">ac</span><span class="p">[</span><span class="n">inds</span><span class="p">])</span>       <span class="c1"># ... and plot them</span>
 <span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Lag [s]&#39;</span><span class="p">)</span>                     <span class="c1"># ... with axes labelled</span>
@@ -773,8 +766,8 @@ be similar. One technique to assess the dependent structure in the data is the a
 <span class="n">L</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="mi">1</span><span class="o">/</span><span class="mi">60</span><span class="o">/</span><span class="n">dt</span><span class="p">);</span>                             <span class="c1"># Choose the lag,</span>
                                                 <span class="c1"># ... and plot the shifted traces.</span>
 <span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="n">inds</span><span class="p">],</span> <span class="n">x</span><span class="p">[[</span><span class="n">i</span> <span class="o">+</span> <span class="n">L</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">inds</span><span class="p">]]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;L=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">L</span><span class="p">))</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>                                    <span class="c1"># Add a legend and informative title</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Original time series data, and shifted by amount L&quot;</span><span class="p">);</span>
+<span class="n">legend</span><span class="p">()</span>                                    <span class="c1"># Add a legend and informative title</span>
+<span class="n">title</span><span class="p">(</span><span class="s2">&quot;Original time series data, and shifted by amount L&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -823,7 +816,6 @@ be similar. One technique to assess the dependent structure in the data is the a
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">YouTubeVideo</span><span class="p">(</span><span class="s1">&#39;OAHpkZy6ZX8&#39;</span><span class="p">)</span>
-<span class="c1"># NO CODE</span>
 </pre></div>
 </div>
 </div>
@@ -845,7 +837,6 @@ be similar. One technique to assess the dependent structure in the data is the a
 </div><div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">YouTubeVideo</span><span class="p">(</span><span class="s1">&#39;iPUpMS79xgo&#39;</span><span class="p">)</span>
-<span class="c1"># NO CODE</span>
 </pre></div>
 </div>
 </div>
@@ -861,7 +852,7 @@ be similar. One technique to assess the dependent structure in the data is the a
 </div></div>
 </div>
 <p><a id="spectrum"></a>
-<strong>Computing the spectrum.</strong> We start by presenting all the formulas and code necessary to compute the spectrum of the data. Then throughout the rest of this module, we circle back and consider each step of the computation in detail.</p>
+<strong>Computing the spectrum.</strong> We start by presenting all the formulas and code necessary to compute the spectrum of the data. Then throughout the rest of this notebook, we circle back and consider each step of the computation in detail.</p>
 <p>We first need a formula for the discrete-time Fourier transform of the data x:<a id="eq:3.8"></a></p>
 <div class="math notranslate nohighlight">
 \[X_j = \sum_{n=1}^N x_n \exp(-2 \pi i f_j t_n).\]</div>
@@ -872,18 +863,18 @@ be similar. One technique to assess the dependent structure in the data is the a
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">xf</span> <span class="o">=</span> <span class="n">fft</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">x</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>               <span class="c1"># Compute Fourier transform of x</span>
-<span class="n">Sxx</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">dt</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">T</span> <span class="o">*</span> <span class="p">(</span><span class="n">xf</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">xf</span><span class="p">))</span>  <span class="c1"># Compute spectrum</span>
+<span class="n">Sxx</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">dt</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">T</span> <span class="o">*</span> <span class="p">(</span><span class="n">xf</span> <span class="o">*</span> <span class="n">conj</span><span class="p">(</span><span class="n">xf</span><span class="p">))</span>  <span class="c1"># Compute spectrum</span>
 <span class="n">Sxx</span> <span class="o">=</span> <span class="n">Sxx</span><span class="p">[:</span><span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)]</span>                 <span class="c1"># Ignore negative frequencies</span>
 
 <span class="n">df</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">T</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>                            <span class="c1"># Determine frequency resolution</span>
 <span class="n">fNQ</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">dt</span> <span class="o">/</span> <span class="mi">2</span>                            <span class="c1"># Determine Nyquist frequency</span>
-<span class="n">faxis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">fNQ</span><span class="p">,</span><span class="n">df</span><span class="p">)</span>                 <span class="c1"># Construct frequency axis</span>
+<span class="n">faxis</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">fNQ</span><span class="p">,</span><span class="n">df</span><span class="p">)</span>                 <span class="c1"># Construct frequency axis</span>
 
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">faxis</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="n">Sxx</span><span class="p">))</span>               <span class="c1"># Plot spectrum vs frequency</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">])</span>                          <span class="c1"># Select frequency range</span>
+<span class="n">plot</span><span class="p">(</span><span class="n">faxis</span><span class="p">,</span> <span class="n">real</span><span class="p">(</span><span class="n">Sxx</span><span class="p">))</span>               <span class="c1"># Plot spectrum vs frequency</span>
+<span class="n">xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">])</span>                          <span class="c1"># Select frequency range</span>
 <span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Frequency [Hz]&#39;</span><span class="p">)</span>                    <span class="c1"># Label the axes</span>
 <span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Power [$\mu V^2$/Hz]&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -894,7 +885,6 @@ be similar. One technique to assess the dependent structure in the data is the a
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">YouTubeVideo</span><span class="p">(</span><span class="s1">&#39;kmHCCzAbMVI&#39;</span><span class="p">)</span>
-<span class="c1"># NO CODE</span>
 </pre></div>
 </div>
 </div>
@@ -918,7 +908,6 @@ be similar. One technique to assess the dependent structure in the data is the a
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">YouTubeVideo</span><span class="p">(</span><span class="s1">&#39;noCOC69jvh8&#39;</span><span class="p">)</span>
-<span class="c1"># NO CODE</span>
 </pre></div>
 </div>
 </div>
@@ -979,7 +968,7 @@ be similar. One technique to assess the dependent structure in the data is the a
 <span class="n">Sxx</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">dt</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">T</span> <span class="o">*</span> <span class="p">(</span> <span class="n">xf</span> <span class="o">*</span> <span class="n">xf</span><span class="o">.</span><span class="n">conj</span><span class="p">()</span> <span class="p">)</span> <span class="p">)</span><span class="o">.</span><span class="n">real</span>
 <span class="n">df</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">T</span>
 <span class="n">fNQ</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">dt</span> <span class="o">/</span> <span class="mi">2</span>
-<span class="n">faxis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Sxx</span><span class="p">))</span> <span class="o">*</span> <span class="n">df</span>
+<span class="n">faxis</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Sxx</span><span class="p">))</span> <span class="o">*</span> <span class="n">df</span>
 <span class="n">plot</span><span class="p">(</span><span class="n">faxis</span><span class="p">,</span> <span class="n">Sxx</span><span class="p">)</span>
 <span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Frequency (Hz)&#39;</span><span class="p">)</span>
 <span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Power [$\mu V^2$/Hz]&#39;</span><span class="p">)</span>
@@ -997,7 +986,6 @@ be similar. One technique to assess the dependent structure in the data is the a
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">YouTubeVideo</span><span class="p">(</span><span class="s1">&#39;sgYkOkrlQ_E&#39;</span><span class="p">)</span>
-<span class="c1"># NO CODE</span>
 </pre></div>
 </div>
 </div>
@@ -1035,7 +1023,6 @@ be similar. One technique to assess the dependent structure in the data is the a
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">YouTubeVideo</span><span class="p">(</span><span class="s1">&#39;bZsj_gcGoSo&#39;</span><span class="p">)</span>
-<span class="c1"># NO CODE</span>
 </pre></div>
 </div>
 </div>
@@ -1053,7 +1040,7 @@ be similar. One technique to assess the dependent structure in the data is the a
 <p>The frequency resolution is defined as</p>
 <div class="math notranslate nohighlight">
 \[df = \frac{1}{T}\]</div>
-<p>where <span class="math notranslate nohighlight">\(T\)</span> is the total duration of the recording. For the EEG data used in this chapter, <span class="math notranslate nohighlight">\(T = 2\)</span> s, so the frequency resolution is <span class="math notranslate nohighlight">\(df = 1/(2\ \mbox s) = 0.5\)</span> Hz.</p>
+<p>where <span class="math notranslate nohighlight">\(T\)</span> is the total duration of the recording. For the EEG data used in this notebook, <span class="math notranslate nohighlight">\(T = 2\)</span> s, so the frequency resolution is <span class="math notranslate nohighlight">\(df = 1/(2\ \mbox s) = 0.5\)</span> Hz.</p>
 <div class="question">
 <p><strong>Q.</strong> How do we improve the frequency resolution?</p>
 <p><strong>A.</strong> There’s only one way to do it: increase <span class="math notranslate nohighlight">\(T\)</span>. That is, record more data. For example, if we demand a frequency resolution of 0.2 Hz, how much data must we record? We can rearrange the equation to solve for <span class="math notranslate nohighlight">\(T\)</span>,</p>
@@ -1075,7 +1062,6 @@ This observation provides some intuition for the relation between the amount of 
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">YouTubeVideo</span><span class="p">(</span><span class="s1">&#39;SuDJha5LNL0&#39;</span><span class="p">)</span>
-<span class="c1"># NO CODE</span>
 </pre></div>
 </div>
 </div>
@@ -1096,7 +1082,7 @@ We see that the spectrum is dominated by a single peak at 60 Hz. Other, weaker r
 <a id="fig:3.13a"></a></p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plot</span><span class="p">(</span><span class="n">faxis</span><span class="p">,</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">Sxx</span> <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="n">Sxx</span><span class="p">)))</span>   <span class="c1"># Plot the spectrum in decibels.</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plot</span><span class="p">(</span><span class="n">faxis</span><span class="p">,</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">log10</span><span class="p">(</span><span class="n">Sxx</span> <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="n">Sxx</span><span class="p">)))</span>   <span class="c1"># Plot the spectrum in decibels.</span>
 <span class="n">xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">])</span>                           <span class="c1"># Select the frequency range.</span>
 <span class="n">ylim</span><span class="p">([</span><span class="o">-</span><span class="mi">60</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>                           <span class="c1"># Select the decibel range.</span>
 <span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Frequency [Hz]&#39;</span><span class="p">)</span>                     <span class="c1"># Label the axes.</span>
@@ -1120,7 +1106,7 @@ We see that the spectrum is dominated by a single peak at 60 Hz. Other, weaker r
 <p>To further emphasize the low-frequency structure of the spectrum, we may also convert the frequency axis to a logarithmic scale:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">semilogx</span><span class="p">(</span><span class="n">faxis</span><span class="p">,</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">Sxx</span> <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="n">Sxx</span><span class="p">)))</span>   <span class="c1"># Log-log scale</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">semilogx</span><span class="p">(</span><span class="n">faxis</span><span class="p">,</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">log10</span><span class="p">(</span><span class="n">Sxx</span> <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="n">Sxx</span><span class="p">)))</span>   <span class="c1"># Log-log scale</span>
 <span class="n">xlim</span><span class="p">([</span><span class="n">df</span><span class="p">,</span> <span class="mi">100</span><span class="p">])</span>                                  <span class="c1"># Select frequency range</span>
 <span class="n">ylim</span><span class="p">([</span><span class="o">-</span><span class="mi">60</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>                                   <span class="c1"># ... and the decibel range.</span>
 <span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Frequency [Hz]&#39;</span><span class="p">)</span>                         <span class="c1"># Label the axes.</span>
@@ -1141,7 +1127,6 @@ We see that the spectrum is dominated by a single peak at 60 Hz. Other, weaker r
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">YouTubeVideo</span><span class="p">(</span><span class="s1">&#39;XYy4NEr3VUs&#39;</span><span class="p">)</span>
-<span class="c1"># NO CODE</span>
 </pre></div>
 </div>
 </div>
@@ -1172,9 +1157,9 @@ We see that the spectrum is dominated by a single peak at 60 Hz. Other, weaker r
     <span class="n">fs</span><span class="o">=</span><span class="n">Fs</span><span class="p">,</span>                <span class="c1"># ... the sampling frequency,</span>
     <span class="n">nperseg</span><span class="o">=</span><span class="n">interval</span><span class="p">,</span>     <span class="c1"># ... the length of a segment,</span>
     <span class="n">noverlap</span><span class="o">=</span><span class="n">overlap</span><span class="p">)</span>     <span class="c1"># ... the number of samples to overlap,</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">Sxx</span><span class="p">),</span>
+<span class="n">pcolormesh</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">log10</span><span class="p">(</span><span class="n">Sxx</span><span class="p">),</span>
                <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;jet&#39;</span><span class="p">)</span><span class="c1"># Plot the result</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>            <span class="c1"># ... with a color bar,</span>
+<span class="n">colorbar</span><span class="p">()</span>            <span class="c1"># ... with a color bar,</span>
 <span class="n">ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">70</span><span class="p">])</span>             <span class="c1"># ... set the frequency range,</span>
 <span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Time [s]&#39;</span><span class="p">)</span>       <span class="c1"># ... and label the axes</span>
 <span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Frequency [Hz]&#39;</span><span class="p">)</span>
@@ -1202,7 +1187,6 @@ We see that the spectrum is dominated by a single peak at 60 Hz. Other, weaker r
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">YouTubeVideo</span><span class="p">(</span><span class="s1">&#39;jdceZRY_PDA&#39;</span><span class="p">)</span>
-<span class="c1"># NO CODE</span>
 </pre></div>
 </div>
 </div>
@@ -1217,8 +1201,8 @@ We see that the spectrum is dominated by a single peak at 60 Hz. Other, weaker r
 ></iframe>
 </div></div>
 </div>
-<p>In this chapter, we analyzed 2 s of EEG data. We started with visual inspection of the <a class="reference external" href="#fig:3.1">EEG time series</a>.<span class="sup">fig<img src="imgs/3-1.png"></span> This is always the best place to start when analyzing new data and provides initial important intuition for the time series. Through the initial visual inspection, we concluded that rhythmic activity appeared and was dominated by a 60 Hz oscillation. Then, to characterize further the rhythmic activity, we computed two related quantities: the autocovariance and the spectrum. We found that rhythmic activity appeared in the autocovariance of the data. We then considered the spectrum. To do so, we first introduced the notion of the Fourier transform and discussed in detail how to compute the spectrum in Python. We also defined two fundamental quantities—the frequency resolution and the Nyquist frequency—and explored how to manipulate these quantities. (We recommend you commit both quantities to memory. For every spectral analysis you encounter, ask: What is the frequency resolution? What is the Nyquist frequency?). We then considered how <a class="reference external" href="#fig:3.13a">logarithmic scales</a>  can be used to emphasize features of the spectrum.<span class="sup">fig<img src="imgs/3-13a.png"></span> And, we examined how the <a class="reference external" href="%22#fig:3.14%22">spectrogram</a> provides insight into spectral features that change in time.<span class="sup">fig<img src="imgs/3-14.png"></span> We concluded that the EEG data are dominated by 60 Hz activity throughout the 2 s interval, and that weaker low-frequency activity emerges during two intervals: a 6 Hz rhythm from 0 s to 1 s, and an 11 Hz rhythm from 1 s to 2 s.</p>
-<p>In this module, we only touched the surface of spectral analysis; many details and issues exist for further exploration. In future modules, we will discuss the issues of windowing and zero padding. For those interested in exploring further, see <a class="reference external" href="https://doi.org/10.1017/CBO9780511622762">Percival &amp; Walden, 1998</a> and <a class="reference external" href="https://buprimo.hosted.exlibrisgroup.com/primo-explore/fulldisplay?docid=ALMA_BOSU121668583370001161&amp;context=L&amp;vid=BU&amp;search_scope=default_scope&amp;tab=default_tab&amp;lang=en_US">Priestley, 1981</a>.</p>
+<p>In this notebook, we analyzed 2 s of EEG data. We started with visual inspection of the <a class="reference external" href="#fig:3.1">EEG time series</a>.<span class="sup">fig<img src="imgs/3-1.png"></span> This is always the best place to start when analyzing new data and provides initial important intuition for the time series. Through the initial visual inspection, we concluded that rhythmic activity appeared and was dominated by a 60 Hz oscillation. Then, to characterize further the rhythmic activity, we computed two related quantities: the autocovariance and the spectrum. We found that rhythmic activity appeared in the autocovariance of the data. We then considered the spectrum. To do so, we first introduced the notion of the Fourier transform and discussed in detail how to compute the spectrum in Python. We also defined two fundamental quantities—the frequency resolution and the Nyquist frequency—and explored how to manipulate these quantities. (We recommend you commit both quantities to memory. For every spectral analysis you encounter, ask: What is the frequency resolution? What is the Nyquist frequency?). We then considered how <a class="reference external" href="#fig:3.13a">logarithmic scales</a>  can be used to emphasize features of the spectrum.<span class="sup">fig<img src="imgs/3-13a.png"></span> And, we examined how the <a class="reference external" href="%22#fig:3.14%22">spectrogram</a> provides insight into spectral features that change in time.<span class="sup">fig<img src="imgs/3-14.png"></span> We concluded that the EEG data are dominated by 60 Hz activity throughout the 2 s interval, and that weaker low-frequency activity emerges during two intervals: a 6 Hz rhythm from 0 s to 1 s, and an 11 Hz rhythm from 1 s to 2 s.</p>
+<p>In this notebook, we only touched the surface of spectral analysis; many details and issues exist for further exploration. In future notebooks, we will discuss the issues of windowing and zero padding. For those interested in exploring further, see <a class="reference external" href="https://doi.org/10.1017/CBO9780511622762">Percival &amp; Walden, 1998</a> and <a class="reference external" href="https://buprimo.hosted.exlibrisgroup.com/primo-explore/fulldisplay?docid=ALMA_BOSU121668583370001161&amp;context=L&amp;vid=BU&amp;search_scope=default_scope&amp;tab=default_tab&amp;lang=en_US">Priestley, 1981</a>.</p>
 <p><a class="reference external" href="#top">Return to top</a></p>
 <hr class="docutils" />
 <p><a id="supplements"></a></p>
@@ -1253,7 +1237,7 @@ We see that the spectrum is dominated by a single peak at 60 Hz. Other, weaker r
                                           <span class="c1"># Calculate non-normalized autocovariance</span>
 <span class="n">ac</span> <span class="o">=</span> <span class="n">correlate</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">x</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">x</span> <span class="o">-</span> <span class="n">x</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;full&quot;</span><span class="p">)</span>  
 <span class="n">ac_b</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">N</span> <span class="o">*</span> <span class="n">ac</span>                         <span class="c1"># Calculate biased autocovariance</span>
-<span class="n">ac_u</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">N</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">lags</span><span class="p">))</span> <span class="o">*</span> <span class="n">ac</span>        <span class="c1"># ... and unbiased autocovariance</span>
+<span class="n">ac_u</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">N</span> <span class="o">-</span> <span class="nb">abs</span><span class="p">(</span><span class="n">lags</span><span class="p">))</span> <span class="o">*</span> <span class="n">ac</span>        <span class="c1"># ... and unbiased autocovariance</span>
 
 <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">subplots</span><span class="p">()</span>                  <span class="c1"># Plot the result and save the figure for later use</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">lags</span> <span class="o">*</span> <span class="n">dt</span><span class="p">,</span> <span class="n">ac_u</span><span class="p">)</span>                     <span class="c1"># Plot the unbiased autocovariance,</span>
@@ -1292,7 +1276,6 @@ Now consider the extension to <span class="math notranslate nohighlight">\(L=N-2
 <div class="cell_input docutils container">
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="p">[</span><span class="o">-</span><span class="mf">1.75</span><span class="p">,</span> <span class="mf">1.75</span><span class="p">]]</span>
 <span class="n">fig</span>
-<span class="c1"># NO CODE</span>
 </pre></div>
 </div>
 </div>
@@ -1300,7 +1283,7 @@ Now consider the extension to <span class="math notranslate nohighlight">\(L=N-2
 <img alt="_images/03_128_0.png" src="_images/03_128_0.png" />
 </div>
 </div>
-<div class="question">
+<div class="math-note">
 <p>Increased variability at large lags occurs because, as <span class="math notranslate nohighlight">\(L\)</span> approaches <span class="math notranslate nohighlight">\(N\)</span>, we have less data to compare in the assessment of the autocovariance. Notice that, when <span class="math notranslate nohighlight">\(L = N − 1\)</span>, the estimate of the autocovariance utilizes only two data points from <span class="math notranslate nohighlight">\(x\)</span> (i.e., the product consists only of one term: <span class="math notranslate nohighlight">\((x_N - \bar x)(x_1 - \bar x)\)</span>). We do not expect a reliable assessment of associations in the data with so few data points to compare.</p>
 </div><p>With those observations, should we use the biased or unbiased estimator of the autocovariance? Statisticians typically prefer the biased estimator for a variety of reasons <a class="reference external" href="https://doi.org/10.1017/CBO9780511622762">[Percival &amp; Walden, 1998]</a>. First, for many stationary processes, the mean squared error of the biased estimator is smaller than that of the unbiased estimator. The mean squared error depends on both the variance and bias of the estimator:</p>
 <div class="math notranslate nohighlight">
@@ -1335,7 +1318,7 @@ r_{xx}^*[N-1] &amp;=&amp; \frac{1}{N - (N - 1)}\sum_{n=1}^{N - (N-1)}(x_{n+N-1} 
 </ul>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Tools for this chapter</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Tools for this notebook</span>
 <span class="kn">import</span> <span class="nn">statsmodels.formula.api</span> <span class="k">as</span> <span class="nn">smf</span>
 <span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">DataFrame</span> <span class="k">as</span> <span class="n">df</span>
 <span class="kn">from</span> <span class="nn">scipy.io</span> <span class="kn">import</span> <span class="n">loadmat</span>
@@ -1343,7 +1326,7 @@ r_{xx}^*[N-1] &amp;=&amp; \frac{1}{N - (N - 1)}\sum_{n=1}^{N - (N-1)}(x_{n+N-1} 
 </div>
 </div>
 </div>
-<p>The main component of this module discusses the analysis of rhythmic activity. One important component of this analysis is the power spectral density. In this supplement, we examine equation for the Fourier transform</p>
+<p>The main component of this notebook discusses the analysis of rhythmic activity. One important component of this analysis is the power spectral density. In this supplement, we examine equation for the Fourier transform</p>
 <div class="math notranslate nohighlight">
 \[X_j = \sum_{n=1}^{N}x_n \exp(-2\pi i f_j t_n).\]</div>
 <p>and the equation for the spectrum</p>
@@ -1356,7 +1339,6 @@ r_{xx}^*[N-1] &amp;=&amp; \frac{1}{N - (N - 1)}\sum_{n=1}^{N - (N-1)}(x_{n+N-1} 
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">YouTubeVideo</span><span class="p">(</span><span class="s1">&#39;TOszYv0pdKU&#39;</span><span class="p">)</span>
-<span class="c1"># NO CODE</span>
 </pre></div>
 </div>
 </div>
@@ -1396,7 +1378,6 @@ X_j = \left(\sum_{n=1}^N x_n \cos(-2\pi f_j t_n) \right) + i\left(\sum_{n=1}^N x
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">YouTubeVideo</span><span class="p">(</span><span class="s1">&#39;PRoA5Zn_gbQ&#39;</span><span class="p">)</span>
-<span class="c1"># NO CODE</span>
 </pre></div>
 </div>
 </div>
@@ -1414,8 +1395,8 @@ X_j = \left(\sum_{n=1}^N x_n \cos(-2\pi f_j t_n) \right) + i\left(\sum_{n=1}^N x
 <p>To make these ideas more concrete, we can consider some simple examples. In these examples, the data <span class="math notranslate nohighlight">\(x\)</span> will be a perfect cosine with frequency 10 Hz.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>     <span class="c1"># Create a time variable (in seconds)</span>
-<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">tt</span><span class="p">)</span>  <span class="c1"># Generate the data, a 10 Hz cosine</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tt</span> <span class="o">=</span> <span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>     <span class="c1"># Create a time variable (in seconds)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">cos</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">*</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">tt</span><span class="p">)</span>  <span class="c1"># Generate the data, a 10 Hz cosine</span>
 <span class="n">plot</span><span class="p">(</span><span class="n">tt</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="s1">&#39;k&#39;</span><span class="p">)</span>                 <span class="c1"># Plot the result</span>
 <span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Time [s]&#39;</span><span class="p">)</span>
 <span class="n">show</span><span class="p">()</span>
@@ -1430,12 +1411,12 @@ X_j = \left(\sum_{n=1}^N x_n \cos(-2\pi f_j t_n) \right) + i\left(\sum_{n=1}^N x
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">fj</span> <span class="o">=</span> <span class="mi">4</span>                                 <span class="c1"># Set frequency</span>
-<span class="n">fj_sin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">fj</span> <span class="o">*</span> <span class="n">tt</span><span class="p">)</span>  <span class="c1"># construct sine wave</span>
-<span class="n">fj_cos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">fj</span> <span class="o">*</span> <span class="n">tt</span><span class="p">)</span>  <span class="c1"># ... and cosine</span>
+<span class="n">fj_sin</span> <span class="o">=</span> <span class="n">sin</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">*</span> <span class="n">fj</span> <span class="o">*</span> <span class="n">tt</span><span class="p">)</span>  <span class="c1"># construct sine wave</span>
+<span class="n">fj_cos</span> <span class="o">=</span> <span class="n">cos</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">*</span> <span class="n">fj</span> <span class="o">*</span> <span class="n">tt</span><span class="p">)</span>  <span class="c1"># ... and cosine</span>
 <span class="n">plot</span><span class="p">(</span><span class="n">tt</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;data&#39;</span><span class="p">)</span>         <span class="c1"># Plot the data</span>
 <span class="n">plot</span><span class="p">(</span><span class="n">tt</span><span class="p">,</span> <span class="n">fj_sin</span><span class="p">,</span> <span class="s1">&#39;r--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;sine&#39;</span><span class="p">)</span>  <span class="c1"># ... and the sine</span>
 <span class="n">plot</span><span class="p">(</span><span class="n">tt</span><span class="p">,</span> <span class="n">fj_cos</span><span class="p">,</span> <span class="s1">&#39;r:&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;cosine&#39;</span><span class="p">)</span> <span class="c1"># ... and cosine</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">legend</span><span class="p">()</span>
 <span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -1448,8 +1429,8 @@ X_j = \left(\sum_{n=1}^N x_n \cos(-2\pi f_j t_n) \right) + i\left(\sum_{n=1}^N x
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plot</span><span class="p">(</span><span class="n">tt</span><span class="p">,</span> <span class="n">x</span> <span class="o">*</span> <span class="n">fj_sin</span><span class="p">,</span> <span class="n">tt</span><span class="p">,</span> <span class="n">x</span> <span class="o">*</span> <span class="n">fj_cos</span><span class="p">)</span>  <span class="c1"># Plot the product of x with the sinusoids</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s1">&#39;Sine&#39;</span><span class="p">,</span> <span class="s1">&#39;Cosine&#39;</span><span class="p">])</span>
-<span class="n">plot</span><span class="p">(</span><span class="n">tt</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">tt</span><span class="p">),</span> <span class="s1">&#39;k&#39;</span><span class="p">)</span>      <span class="c1"># Show zero</span>
+<span class="n">legend</span><span class="p">([</span><span class="s1">&#39;Sine&#39;</span><span class="p">,</span> <span class="s1">&#39;Cosine&#39;</span><span class="p">])</span>
+<span class="n">plot</span><span class="p">(</span><span class="n">tt</span><span class="p">,</span> <span class="n">zeros_like</span><span class="p">(</span><span class="n">tt</span><span class="p">),</span> <span class="s1">&#39;k&#39;</span><span class="p">)</span>      <span class="c1"># Show zero</span>
 <span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -1470,13 +1451,13 @@ X_j = \left(\sum_{n=1}^N x_n \cos(-2\pi f_j t_n) \right) + i\left(\sum_{n=1}^N x
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">fj</span> <span class="o">=</span> <span class="mi">10</span>                                <span class="c1"># Set the frequency</span>
-<span class="n">fj_sin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">fj</span> <span class="o">*</span> <span class="n">tt</span><span class="p">)</span>  <span class="c1"># Construct the sine wave</span>
-<span class="n">fj_cos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">fj</span> <span class="o">*</span> <span class="n">tt</span><span class="p">)</span>  <span class="c1"># ... and cosine wave</span>
+<span class="n">fj_sin</span> <span class="o">=</span> <span class="n">sin</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">*</span> <span class="n">fj</span> <span class="o">*</span> <span class="n">tt</span><span class="p">)</span>  <span class="c1"># Construct the sine wave</span>
+<span class="n">fj_cos</span> <span class="o">=</span> <span class="n">cos</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">*</span> <span class="n">fj</span> <span class="o">*</span> <span class="n">tt</span><span class="p">)</span>  <span class="c1"># ... and cosine wave</span>
 
 <span class="n">plot</span><span class="p">(</span><span class="n">tt</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;data&#39;</span><span class="p">)</span>         <span class="c1"># Plot the data</span>
 <span class="n">plot</span><span class="p">(</span><span class="n">tt</span><span class="p">,</span> <span class="n">fj_sin</span><span class="p">,</span> <span class="s1">&#39;r--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;sine&#39;</span><span class="p">)</span>  <span class="c1"># ... and the sine</span>
 <span class="n">plot</span><span class="p">(</span><span class="n">tt</span><span class="p">,</span> <span class="n">fj_cos</span><span class="p">,</span> <span class="s1">&#39;r:&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;cosine&#39;</span><span class="p">)</span> <span class="c1"># ... and cosine</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">legend</span><span class="p">()</span>
 <span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -1495,7 +1476,7 @@ X_j = \left(\sum_{n=1}^N x_n \cos(-2\pi f_j t_n) \right) + i\left(\sum_{n=1}^N x
 <div class="section" id="relation-of-the-spectrum-to-the-autocovariance">
 <h3>Relation of the spectrum to the autocovariance.<a class="headerlink" href="#relation-of-the-spectrum-to-the-autocovariance" title="Permalink to this headline">¶</a></h3>
 <p>We’ve introduced two tools for assessing dependent structure in the EEG data: the autocovariance and the spectrum. Remarkably, these two measures are related in an important way.</p>
-<div class="alert alert-success">
+<div class="math-note">
 <p>The spectrum is the Fourier transform of the autocovariance.</p>
 </div>
 <p>The spectrum and autocovariance both assess dependent structure in the data but in different domains - the spectrum in the frequency domain and the autocovariance in the time domain. Notice that the spectrum <span class="math notranslate nohighlight">\(S_{xx, j}\)</span> <a href="Analysis%20of%20rhythmic%20activity.ipynb#eq:3.9" class="thumb"><span><img src="imgs/eq3-9.png"></span></a> is a function of frequency index <span class="math notranslate nohighlight">\(j\)</span>, while the autocovariance <span class="math notranslate nohighlight">\(r_{xx}[L]\)</span> <a href="Analysis%20of%20rhythmic%20activity.ipynb#eq:3.3" class="thumb"><span><img src="imgs/eq3-3.png"></span></a> is a function of time lag <span class="math notranslate nohighlight">\(L\)</span>. For the EEG data of interest here, the dominant 60 Hz rhythm manifests as periodicity in the autocovariance as a function of lag <a href="Analysis%20of%20rhythmic%20activity.ipynb#fig:3-4a" class="fig"><span><img src="imgs/3-4a.png"></span></a> and a peak in the spectrum as a function of frequency. <a href="Analysis%20of%20rhythmic%20activity.ipynb#fig:3.6" class="fig"><span><img src="imgs/3-6.png"></span></a> Although the two measures are related through the Fourier transform, each provides a different perspective on the dependent structure in the data. In practice, applying and visualizing both measures is often of use.</p>
@@ -1512,7 +1493,7 @@ X_j = \left(\sum_{n=1}^N x_n \cos(-2\pi f_j t_n) \right) + i\left(\sum_{n=1}^N x
 \[x_n = \beta_0 + \beta_1z_{1n} + \epsilon_N,\]</div>
 <p>with slope <span class="math notranslate nohighlight">\(\beta_1\)</span> and intercept <span class="math notranslate nohighlight">\(\beta_0\)</span>.</p>
 <p>Let’s consider the application of multiple linear regression to the EEG data with a specific
-purpose: to remove the 60 Hz line noise. Recall that we found that the spectrum was dominated by a 60 Hz peak. <a href="Analysis%20of%20rhythmic%20activity.ipynb#fig:3.6" class="fig"><span><img src="imgs/3-6.png"></span></a> We expect this 60 Hz is due to electrical noise in the system, and this large noise peak may mask other interesting features occurring in the EEG data. Therefore, our analysis of the EEG data may benefit by removing this large 60 Hz signal. To do so, we first fit a multiple linear regression model to the data <span class="math notranslate nohighlight">\(x_n\)</span> with the following form,<a id="eq:3.12"></a></p>
+purpose: to remove the 60 Hz line noise. Recall that we found that the spectrum was dominated by a 60 Hz peak. <a href="#fig:3.6" class="fig"><span><img src="imgs/3-6.png"></span></a> We expect this 60 Hz is due to electrical noise in the system, and this large noise peak may mask other interesting features occurring in the EEG data. Therefore, our analysis of the EEG data may benefit by removing this large 60 Hz signal. To do so, we first fit a multiple linear regression model to the data <span class="math notranslate nohighlight">\(x_n\)</span> with the following form,<a id="eq:3.12"></a></p>
 <div class="math notranslate nohighlight">
 \[x_n = \beta_0 + \beta_1 \sin(2\pi \cdot 60 t_n) + \beta_2\cos(2\pi \cdot 60 t_n) + \epsilon_n,\]</div>
 <p>where <span class="math notranslate nohighlight">\(x_n\)</span> is the EEG data at index <span class="math notranslate nohighlight">\(n\)</span>, <span class="math notranslate nohighlight">\(t_n\)</span> is the corresponding time axis at index <span class="math notranslate nohighlight">\(n\)</span> in units of seconds, and <span class="math notranslate nohighlight">\(\epsilon_n\)</span> is a random variable.</p>
@@ -1520,7 +1501,7 @@ purpose: to remove the 60 Hz line noise. Recall that we found that the spectrum 
 <p><strong>Q.</strong> The model consists of three predictors. What are they?</p>
 <p><strong>A.</strong> The predictors are a constant term, a sine function at 60 Hz, and a cosine function at 60 Hz. Our goal is to solve for the unknown coefficients <span class="math notranslate nohighlight">\(\beta_0,\ \beta_1,\)</span> and <span class="math notranslate nohighlight">\(\beta_2\)</span> given the EEG data.</p>
 </div><p>To do multiple linear regression in Python we start by importing the <code class="docutils literal notranslate"><span class="pre">statsmodels</span></code> package and the <code class="docutils literal notranslate"><span class="pre">DataFrame</span></code> function from the <code class="docutils literal notranslate"><span class="pre">pandas</span></code> package. We use <code class="docutils literal notranslate"><span class="pre">DataFrame</span></code> to create a table that is easy to work with and then use <code class="docutils literal notranslate"><span class="pre">statsmodels</span></code> to perform the regression.</p>
-<p>We will work with the same data set that we used in the main component of this module, so we start by importing the data.</p>
+<p>We will work with the same data set that we used in the main component of this notebook, so we start by importing the data.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">loadmat</span><span class="p">(</span><span class="s1">&#39;matfiles/03_EEG-1.mat&#39;</span><span class="p">)</span>
@@ -1534,8 +1515,8 @@ purpose: to remove the 60 Hz line noise. Recall that we found that the spectrum 
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">predictors</span> <span class="o">=</span> <span class="n">df</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">{</span>                  <span class="c1"># Create a dataframe with the predictors</span>
-    <span class="s1">&#39;sin&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="n">t</span><span class="p">),</span>  <span class="c1"># ... including the sine function</span>
-    <span class="s1">&#39;cos&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="n">t</span><span class="p">),</span>  <span class="c1"># ... and the cosine function</span>
+    <span class="s1">&#39;sin&#39;</span><span class="p">:</span> <span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="n">t</span><span class="p">),</span>  <span class="c1"># ... including the sine function</span>
+    <span class="s1">&#39;cos&#39;</span><span class="p">:</span> <span class="n">cos</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="n">t</span><span class="p">),</span>  <span class="c1"># ... and the cosine function</span>
     <span class="s1">&#39;EEG&#39;</span><span class="p">:</span> <span class="n">EEG</span>
 <span class="p">})</span>
 
@@ -1570,10 +1551,10 @@ cos         -3.24e-03</p>
 <div class="cell_input docutils container">
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">EEG_60Hz_modeled</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">()</span>    <span class="c1"># Get the model prediction</span>
 <span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">EEG</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">EEG_60Hz_modeled</span><span class="p">)</span>     <span class="c1"># Plot the data and the model</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>                    <span class="c1"># ... examine 0.5 s of data,</span>
+<span class="n">xlim</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>                    <span class="c1"># ... examine 0.5 s of data,</span>
 <span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Time [s]&#39;</span><span class="p">)</span>                    <span class="c1"># ... and label the axes</span>
 <span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;EEG and Modeled EEG [$\mu$V]&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s1">&#39;EEG&#39;</span><span class="p">,</span> <span class="s1">&#39;model&#39;</span><span class="p">])</span>
+<span class="n">legend</span><span class="p">([</span><span class="s1">&#39;EEG&#39;</span><span class="p">,</span> <span class="s1">&#39;model&#39;</span><span class="p">])</span>
 <span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -1621,13 +1602,31 @@ cos         -3.24e-03</p>
 <p>The power estimate from the model consists of two terms: the squared coefficient of the sine function plus the squared coefficient of the cosine function. Note that the variable <code class="docutils literal notranslate"><span class="pre">Sxx_model_60Hz</span></code> has units of mV<span class="math notranslate nohighlight">\(^2\)</span>.</p>
 <div class="question">
 <p><strong>Q.</strong> Compare the power estimate from the model (the variable <code class="docutils literal notranslate"><span class="pre">Sxx_model_60Hz</span></code>) to the power spectral density at 60 Hz computed using the Fourier transform. What do you find?</p>
-<p><strong>A.</strong> We note that the units of the power spectral density (variable <code class="docutils literal notranslate"><span class="pre">Sxx</span></code>) are mV<span class="math notranslate nohighlight">\(^2/\)</span>Hz, while the units of the power estimated in variable <code class="docutils literal notranslate"><span class="pre">Sxx_model_60Hz</span></code> are mV<span class="math notranslate nohighlight">\(^2\)</span>. To convert the power spectral density to (integrated) spectral power, we must integrate the variable <code class="docutils literal notranslate"><span class="pre">Sxx</span></code> over a frequency range. Here, we choose a 1 Hz interval centered at 60 Hz, which corresponds to a single index of the variable <code class="docutils literal notranslate"><span class="pre">faxis</span></code>; the frequency resolution for these data is <span class="math notranslate nohighlight">\(\pm 0.5\)</span> Hz. Then the approximate integrated power over this 1 Hz interval can be computed as <code class="docutils literal notranslate"><span class="pre">Sxx[np.where(faxis</span> <span class="pre">==</span> <span class="pre">60)]</span></code>, which equals 0.9978, identical to the value in <code class="docutils literal notranslate"><span class="pre">Sxx_model_60Hz</span></code>, and with the same units.</p>
+<p><strong>A.</strong> We note that the units of the power spectral density (variable <code class="docutils literal notranslate"><span class="pre">Sxx</span></code>) are mV<span class="math notranslate nohighlight">\(^2/\)</span>Hz, while the units of the power estimated in variable <code class="docutils literal notranslate"><span class="pre">Sxx_model_60Hz</span></code> are mV<span class="math notranslate nohighlight">\(^2\)</span>. To convert the power spectral density to (integrated) spectral power, we must integrate the variable <code class="docutils literal notranslate"><span class="pre">Sxx</span></code> over a frequency range. Here, we choose a 1 Hz interval centered at 60 Hz, which corresponds to a single index of the variable <code class="docutils literal notranslate"><span class="pre">faxis</span></code>; the frequency resolution for these data is <span class="math notranslate nohighlight">\(\pm 0.5\)</span> Hz. Then the approximate integrated power over this 1 Hz interval can be computed as <code class="docutils literal notranslate"><span class="pre">Sxx[where(faxis</span> <span class="pre">==</span> <span class="pre">60)]</span></code>, which equals 0.9978, identical to the value in <code class="docutils literal notranslate"><span class="pre">Sxx_model_60Hz</span></code>, and with the same units.</p>
 </div><p>This example, in which we focused on the 60 Hz activity in the EEG, illustrates how we may use multiple linear regression to estimate the power. We could extend this procedure to include additional rhythms in the model beyond 60 Hz (e.g., sine and cosine functions at 1 Hz, 2 Hz, 3 Hz, etc.). In doing so, we would add more terms to the multiple linear regression model and have more <span class="math notranslate nohighlight">\(\beta\)</span>’s to determine from the data. Multiple linear regression provides a way to decompose the EEG data into sine and cosine functions at different frequencies—just as we proposed to do using the Fourier transform—and then compute the power at each frequency. Using either multiple linear regression or the Fourier transform, we aim to decompose the EEG into sine and cosine functions oscillating at different frequencies.</p>
 <p><a class="reference external" href="#top">Return to top</a></p>
 </div>
 </div>
 </div>
 
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "eschlaf2/Case-Studies-Python",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            kernelName: "python3",
+            path: "."
+        }
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
 
               </div>
               

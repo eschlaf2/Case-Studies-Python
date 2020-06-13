@@ -30,6 +30,8 @@
     <script >var togglebuttonSelector = '.toggle, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.18.0/dist/embed-amd.js"></script>
+    <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
+    <script async="async" src="_static/thebelab.js"></script>
     <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="canonical" href="https://mark-kramer.github.io/Case-Studies-Python/A03.html" />
     <link rel="shortcut icon" href="_static/favicon.ico"/>
@@ -46,7 +48,7 @@
 <meta property="og:url"         content="https://mark-kramer.github.io/Case-Studies-Python/A03.html" />
 <meta property="og:type"        content="article" />
 <meta property="og:title"       content="The integrate and fire neuron" />
-<meta property="og:description" content="The integrate and fire neuron  In this module we will use Python to simulate the integrate and fire (I&F) neuron model.  We’ll investigate, in particular, how t" />
+<meta property="og:description" content="The integrate and fire neuron  In this notebook we will use Python to simulate the integrate and fire (I&F) neuron model.  We’ll investigate, in particular, how" />
 <meta property="og:image"       content="https://mark-kramer.github.io/Case-Studies-Python/_static/logo.png" />
 
 <meta name="twitter:card" content="summary">
@@ -195,6 +197,7 @@
                 <a class="binder-button" href="https://mybinder.org/v2/gh/eschlaf2/Case-Studies-Python/master?urlpath=tree/_book/A03.ipynb"><button type="button" class="btn btn-secondary topbarbtn" title="Launch Binder" data-toggle="tooltip" data-placement="left"><img class="binder-button-logo" src="_static/images/logo_binder.svg" alt="Interact on binder">Binder</button></a>
                 
                 
+                <button type="button" class="btn btn-secondary topbarbtn thebelab-launch-button" onclick="initThebelab()" title="Launch Thebelab" data-toggle="tooltip" data-placement="left"><i class="fas fa-rocket"></i><span style="margin-left: .4em;">ThebeLab</span></button>
                 
             </div>
         </div>
@@ -218,7 +221,7 @@
                 
   <div class="section" id="the-integrate-and-fire-neuron">
 <h1>The integrate and fire neuron<a class="headerlink" href="#the-integrate-and-fire-neuron" title="Permalink to this headline">¶</a></h1>
-<p>In this module we will use Python to simulate the integrate and fire (I&amp;F) neuron model.  We’ll investigate, in particular, how the spiking activity varies as we adjust the input current <span class="math notranslate nohighlight">\(I\)</span>.</p>
+<p>In this notebook we will use Python to simulate the integrate and fire (I&amp;F) neuron model.  We’ll investigate, in particular, how the spiking activity varies as we adjust the input current <span class="math notranslate nohighlight">\(I\)</span>.</p>
 </div>
 <div class="section" id="background-information-about-the-i-f-model">
 <h1>Background information about the I&amp;F model<a class="headerlink" href="#background-information-about-the-i-f-model" title="Permalink to this headline">¶</a></h1>
@@ -250,9 +253,8 @@
 <p>Before beginning, let’s load in the Python packages we’ll need:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pylab</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 </pre></div>
 </div>
 </div>
@@ -313,7 +315,7 @@ interesting.  We’ll choose:</p>
 <p>Let’s assume the units of time are seconds.  So, we step forward in time by <span class="math notranslate nohighlight">\(0.01\)</span> s.</p>
 <p>The right hand side of our equation is nearly defined, but we’re still missing one thing, <span class="math notranslate nohighlight">\(V(t)\)</span>.</p>
 <div class="question">
-<p><strong>Q:</strong>  What value do we assign to <span class="math notranslate nohighlight">\(V(t)\)</span>?<br><br></p>
+<p><strong>Q:</strong>  What value do we assign to <span class="math notranslate nohighlight">\(V(t)\)</span>?</p>
 <p><strong>A:</strong>  We don’t know — that’s why we’re running the simulation in the first place!</p>
 </div><p>So here’s an easier question:  what <em>initial</em> value do we assign to <span class="math notranslate nohighlight">\(V(t)\)</span>?</p>
 <p>To start, we’ll create an array of zeros to hold our results for <span class="math notranslate nohighlight">\(V\)</span>:</p>
@@ -419,7 +421,7 @@ the I&amp;F model, and plot the results (with appropriate axes).</p>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pylab</span> <span class="kn">import</span> <span class="o">*</span>      <span class="c1">#Import useful packages.</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pylab</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
 
 <span class="n">I</span><span class="o">=</span><span class="mi">1</span>                     <span class="c1">#Set the parameter I.</span>
@@ -488,7 +490,7 @@ reset voltage <code class="docutils literal notranslate"><span class="pre">Vrese
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pylab</span> <span class="kn">import</span> <span class="o">*</span>     <span class="c1">#Import useful packages.</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pylab</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
 
 <span class="n">I</span><span class="o">=</span><span class="mi">1</span>                     <span class="c1">#Set the parameter I.</span>
@@ -504,7 +506,7 @@ reset voltage <code class="docutils literal notranslate"><span class="pre">Vrese
     <span class="k">if</span> <span class="n">V</span><span class="p">[</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">Vth</span><span class="p">:</span>              <span class="c1">#... and check if the voltage exceeds the threshold.</span>
         <span class="n">V</span><span class="p">[</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">Vreset</span>
         
-<span class="n">t</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">V</span><span class="p">))</span> <span class="o">*</span> <span class="n">dt</span>        <span class="c1">#Define the time axis.</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">V</span><span class="p">))</span><span class="o">*</span><span class="n">dt</span>        <span class="c1">#Define the time axis.</span>
 
 <span class="n">figure</span><span class="p">()</span>            <span class="c1">#Plot the results.</span>
 <span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">V</span><span class="p">)</span>
@@ -526,6 +528,24 @@ reset voltage <code class="docutils literal notranslate"><span class="pre">Vrese
 </div></div>
 </div>
 
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "eschlaf2/Case-Studies-Python",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            kernelName: "python3",
+            path: "."
+        }
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
 
               </div>
               

@@ -30,6 +30,8 @@
     <script >var togglebuttonSelector = '.toggle, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.18.0/dist/embed-amd.js"></script>
+    <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
+    <script async="async" src="_static/thebelab.js"></script>
     <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="canonical" href="https://mark-kramer.github.io/Case-Studies-Python/intro.html" />
     <link rel="shortcut icon" href="_static/favicon.ico"/>
@@ -204,6 +206,18 @@
             <a href="#slow-start-to-learning-python-for-neural-data-analysis" class="nav-link">Slow start to learning Python for neural data analysis:</a>
         </li>
     
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#getting-started" class="nav-link">Getting Started</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#install-python" class="nav-link">Install Python</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#configure-python" class="nav-link">Configure Python</a>
+        </li>
+    
     </ul>
 </nav>
 
@@ -234,10 +248,9 @@
 <p>The intended audience is the <em>practicing neuroscientist</em> - e.g., the students, researchers, and clinicians collecting neuronal data in the hospital or lab.  The material can get pretty math-heavy, but we’ve tried to outline the main concepts as directly as possible, with hands-on implementations of all concepts.  We focus on only two main types of data: spike trains and electric fields (such as the local field potential [LFP], or electroencephalogram [EEG]).  If you’re interested in other data (e.g., calcium imaging, or BOLD), you may still find the examples indirectly useful (for example, demonstrations of how to compute and interpret a power spectrum of a signal).</p>
 <p>This repository was created by Emily Schlafly and Mark Kramer, with important contributions from Dr. Anthea Cheung.</p>
 </div>
-</div>
 <hr class="docutils" />
 <div class="section" id="getting-started">
-<h1>Getting Started<a class="reference external" href="#started"></a><a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
+<h2>Getting Started<a class="reference external" href="#started"></a><a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h2>
 <p>There are multiple ways to interact with these notebooks.</p>
 <ul class="simple">
 <li><p><strong>Simple</strong>: Visit the <a class="reference external" href="https://mark-kramer.github.io/Case-Studies-Python/intro.html">web-formatted version of the notebooks</a>.</p></li>
@@ -247,7 +260,7 @@
 </div>
 <hr class="docutils" />
 <div class="section" id="install-python">
-<h1>Install Python<a class="headerlink" href="#install-python" title="Permalink to this headline">¶</a></h1>
+<h2>Install Python<a class="headerlink" href="#install-python" title="Permalink to this headline">¶</a></h2>
 <p>We assume you have installed Python and can get it running on your computer.  Some useful references to do so include,</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://www.python.org/">Python.org</a></p></li>
@@ -258,7 +271,7 @@
 </div>
 <hr class="docutils" />
 <div class="section" id="configure-python">
-<h1>Configure Python<a class="headerlink" href="#configure-python" title="Permalink to this headline">¶</a></h1>
+<h2>Configure Python<a class="headerlink" href="#configure-python" title="Permalink to this headline">¶</a></h2>
 <p>Once you have installed Anaconda or Miniconda, we recommend setting up an <a class="reference external" href="https://docs.conda.io/projects/conda/en/latest/user-guide/concepts/environments.html">environment</a> to run the notebooks. Type the following code into your terminal to create and activate an environment called <code class="docutils literal notranslate"><span class="pre">csn</span></code>.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">create</span> <span class="n">env</span> <span class="o">--</span><span class="n">file</span> <span class="n">csn</span><span class="o">.</span><span class="n">yml</span>
 <span class="n">conda</span> <span class="n">activate</span> <span class="n">csn</span>
@@ -282,7 +295,26 @@ for f in $(ls startup); do echo $(startup/$f) &gt;&gt; ~/.ipython/profile_defaul
 <div class="toctree-wrapper compound">
 </div>
 </div>
+</div>
 
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "eschlaf2/Case-Studies-Python",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            kernelName: "python3",
+            path: "."
+        }
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
 
               </div>
               

@@ -30,6 +30,8 @@
     <script >var togglebuttonSelector = '.toggle, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.18.0/dist/embed-amd.js"></script>
+    <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
+    <script async="async" src="_static/thebelab.js"></script>
     <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="canonical" href="https://mark-kramer.github.io/Case-Studies-Python/A02.html" />
     <link rel="shortcut icon" href="_static/favicon.ico"/>
@@ -46,7 +48,7 @@
 <meta property="og:url"         content="https://mark-kramer.github.io/Case-Studies-Python/A02.html" />
 <meta property="og:type"        content="article" />
 <meta property="og:title"       content="The Hodgkin-Huxley model" />
-<meta property="og:description" content="The Hodgkin-Huxley model  In this module we will use Python to simulate the Hodgkin-Huxley (HH) neuron model.  This model is arguably the most important computa" />
+<meta property="og:description" content="The Hodgkin-Huxley model  In this notebook we will use Python to simulate the Hodgkin-Huxley (HH) neuron model.  This model is arguably the most important compu" />
 <meta property="og:image"       content="https://mark-kramer.github.io/Case-Studies-Python/_static/logo.png" />
 
 <meta name="twitter:card" content="summary">
@@ -195,6 +197,7 @@
                 <a class="binder-button" href="https://mybinder.org/v2/gh/eschlaf2/Case-Studies-Python/master?urlpath=tree/_book/A02.ipynb"><button type="button" class="btn btn-secondary topbarbtn" title="Launch Binder" data-toggle="tooltip" data-placement="left"><img class="binder-button-logo" src="_static/images/logo_binder.svg" alt="Interact on binder">Binder</button></a>
                 
                 
+                <button type="button" class="btn btn-secondary topbarbtn thebelab-launch-button" onclick="initThebelab()" title="Launch Thebelab" data-toggle="tooltip" data-placement="left"><i class="fas fa-rocket"></i><span style="margin-left: .4em;">ThebeLab</span></button>
                 
             </div>
         </div>
@@ -265,7 +268,7 @@
                 
   <div class="section" id="the-hodgkin-huxley-model">
 <h1>The Hodgkin-Huxley model<a class="headerlink" href="#the-hodgkin-huxley-model" title="Permalink to this headline">¶</a></h1>
-<p>In this module we will use Python to simulate the Hodgkin-Huxley (HH) neuron model.  This model is arguably the <em>most</em> important computational model in neuroscience.  We’ll focus here on simulating this model and understanding its pieces.</p>
+<p>In this notebook we will use Python to simulate the Hodgkin-Huxley (HH) neuron model.  This model is arguably the <em>most</em> important computational model in neuroscience.  We’ll focus here on simulating this model and understanding its pieces.</p>
 <div class="section" id="background-information-about-the-hh-model">
 <h2>Background information about the HH model<a class="headerlink" href="#background-information-about-the-hh-model" title="Permalink to this headline">¶</a></h2>
 <p>Here’s a video that describes some of the biophysical details of the HH model:</p>
@@ -299,8 +302,12 @@
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pylab</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">import</span> <span class="nn">math</span>
-<span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+<span class="o">%</span><span class="n">matplotlib</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-none notranslate"><div class="highlight"><pre><span></span>Using matplotlib backend: MacOSX
 </pre></div>
 </div>
 </div>
@@ -365,7 +372,7 @@
 <div class="question">
 <p><strong>Q:</strong>  Examine this code.  Can you make sense of it?  Can you identify the
 gating variables?  The rate functions?  The equations that define the dynamics?
-We’ll answer these questions in this in module, but try so on your own first.</p>
+We’ll answer these questions in this in notebook, but try so on your own first.</p>
 </div><p>Whenever examining code, it’s useful to consider the <em>inputs</em> to the code, and the <em>outputs</em> produced by the code.  There are two inputs to <code class="docutils literal notranslate"><span class="pre">HH0</span></code>:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">I0</span></code> = the current we inject to the neuron.</p></li>
@@ -445,8 +452,8 @@ to generate repeated spiking activity.  To do so, let’s set,</p>
 </div>
 </div>
 <div class="question">
-<p><strong>Q:</strong>  What happens to the dynamics?
-HINT:  Plot V vs t.</p>
+<p><strong>Q:</strong>  What happens to the dynamics?<br></p>
+<p>HINT:  Plot V vs t.</p>
 </div><div class="section" id="observation-for-part-3">
 <h3>Observation for Part 3<a class="headerlink" href="#observation-for-part-3" title="Permalink to this headline">¶</a></h3>
 <p>You should have found that, at this value of input current, the model
@@ -463,10 +470,9 @@ the voltage,</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.axes._subplots.AxesSubplot at 0x11c084250&gt;
+<div class="output text_plain highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.axes._subplots.AxesSubplot at 0x11d7ce5d0&gt;
 </pre></div>
 </div>
-<img alt="_images/A02_30_1.png" src="_images/A02_30_1.png" />
 </div>
 </div>
 <p>This <code class="docutils literal notranslate"><span class="pre">subplot</span></code> command divides the figure into two rows, and one column, and tells Python we’ll start in the first row. See Python Help for more details:</p>
@@ -480,9 +486,6 @@ the voltage,</p>
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<img alt="_images/A02_33_0.png" src="_images/A02_33_0.png" />
-</div>
 </div>
 <p>Okay, we’ve now plotted the voltage dynamics for a single spike (and
 colored the curve black).  Let’s now plot the three gating variables.
@@ -493,9 +496,6 @@ To do so, we’ll move to the next subplot,</p>
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<img alt="_images/A02_35_0.png" src="_images/A02_35_0.png" />
-</div>
 </div>
 <p>(the next row in the figure).  Within this subplot, let’s start by displaying the gating variable <code class="docutils literal notranslate"><span class="pre">m</span></code> over the same x-limits,</p>
 <div class="cell docutils container">
@@ -504,9 +504,6 @@ To do so, we’ll move to the next subplot,</p>
 <span class="n">xlim</span><span class="p">([</span><span class="mi">42</span><span class="p">,</span> <span class="mi">56</span><span class="p">]);</span>
 </pre></div>
 </div>
-</div>
-<div class="cell_output docutils container">
-<img alt="_images/A02_37_0.png" src="_images/A02_37_0.png" />
 </div>
 </div>
 <p>Notice that, in the call to <code class="docutils literal notranslate"><span class="pre">plot</span></code> we included the input <code class="docutils literal notranslate"><span class="pre">label</span></code>. This will be useful when we create a legend … <br><br>Within this subplot, we can also simultaneously show the gating
@@ -518,9 +515,6 @@ variables <code class="docutils literal notranslate"><span class="pre">h</span><
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<img alt="_images/A02_39_0.png" src="_images/A02_39_0.png" />
-</div>
 </div>
 <p>Label the x-axis,</p>
 <div class="cell docutils container">
@@ -529,9 +523,6 @@ variables <code class="docutils literal notranslate"><span class="pre">h</span><
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<img alt="_images/A02_41_0.png" src="_images/A02_41_0.png" />
-</div>
 </div>
 <p>Now, let’s add a legend to help us keep track of the different curves,</p>
 <div class="cell docutils container">
@@ -539,13 +530,6 @@ variables <code class="docutils literal notranslate"><span class="pre">h</span><
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">legend</span><span class="p">();</span>
 </pre></div>
 </div>
-</div>
-<div class="cell_output docutils container">
-<div class="stderr docutils container">
-<pre class="stderr literal-block">No handles with labels found to put in legend.
-</pre>
-</div>
-<img alt="_images/A02_43_1.png" src="_images/A02_43_1.png" />
 </div>
 </div>
 <div class="question">
@@ -569,9 +553,6 @@ variables <code class="docutils literal notranslate"><span class="pre">h</span><
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<img alt="_images/A02_46_0.png" src="_images/A02_46_0.png" />
-</div>
 </div>
 <p>Now, in the figure, you may use the pan/zoom tool to adjust the linked subplots.</p>
 </div>
@@ -592,9 +573,6 @@ single spike,</p>
 <span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;V [mV]&#39;</span><span class="p">);</span>               <span class="c1">#... with y-axis labeled.</span>
 </pre></div>
 </div>
-</div>
-<div class="cell_output docutils container">
-<img alt="_images/A02_49_0.png" src="_images/A02_49_0.png" />
 </div>
 </div>
 <p>Now, to plot the conductances, let’s define three new variables,</p>
@@ -625,9 +603,6 @@ single spike,</p>
 <span class="n">legend</span><span class="p">();</span>                       <span class="c1">#... make a legend.</span>
 </pre></div>
 </div>
-</div>
-<div class="cell_output docutils container">
-<img alt="_images/A02_54_0.png" src="_images/A02_54_0.png" />
 </div>
 </div>
 <div class="question">
@@ -664,9 +639,6 @@ on a single spike.</p>
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<img alt="_images/A02_57_0.png" src="_images/A02_57_0.png" />
-</div>
 </div>
 <div class="question">
 <p><strong>Q:</strong> How do the conductances evolve during a spike?</p>
@@ -675,6 +647,24 @@ on a single spike.</p>
 </div></div>
 </div>
 
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "eschlaf2/Case-Studies-Python",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            kernelName: "python3",
+            path: "."
+        }
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
 
               </div>
               

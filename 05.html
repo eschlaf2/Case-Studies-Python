@@ -30,6 +30,8 @@
     <script >var togglebuttonSelector = '.toggle, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.18.0/dist/embed-amd.js"></script>
+    <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
+    <script async="async" src="_static/thebelab.js"></script>
     <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="canonical" href="https://mark-kramer.github.io/Case-Studies-Python/05.html" />
     <link rel="shortcut icon" href="_static/favicon.ico"/>
@@ -195,6 +197,7 @@
                 <a class="binder-button" href="https://mybinder.org/v2/gh/eschlaf2/Case-Studies-Python/master?urlpath=tree/_book/05.ipynb"><button type="button" class="btn btn-secondary topbarbtn" title="Launch Binder" data-toggle="tooltip" data-placement="left"><img class="binder-button-logo" src="_static/images/logo_binder.svg" alt="Interact on binder">Binder</button></a>
                 
                 
+                <button type="button" class="btn btn-secondary topbarbtn thebelab-launch-button" onclick="initThebelab()" title="Launch Thebelab" data-toggle="tooltip" data-placement="left"><i class="fas fa-rocket"></i><span style="margin-left: .4em;">ThebeLab</span></button>
                 
             </div>
         </div>
@@ -272,6 +275,7 @@
 <p><strong>Goal:</strong> Characterize the coupling of rhythmic activity between the two electrodes.</p>
 <p><strong>Tools:</strong> Fourier transform, spectrum, amplitude, coherence, phase.</p>
 </div><ul class="simple">
+<li><p><a class="reference external" href="#onramp">On-ramp</a></p></li>
 <li><p><a class="reference external" href="#background">Background</a></p></li>
 <li><p><a class="reference external" href="#case-study-data">Case Study Data</a></p></li>
 <li><p><a class="reference external" href="#data-analysis">Data Analysis</a></p>
@@ -298,6 +302,7 @@
 <li><p><a class="reference external" href="#Relation_between_Statistical_Modeling_and_Coherence">Relation between Statistical Modeling and Coherence</a></p></li>
 <li><p><a class="reference external" href="#summary">Summary</a></p></li>
 </ul>
+<p><a id="onramp"></a></p>
 <div class="section" id="on-ramp-computing-the-coherence-in-python">
 <h2>On-ramp: computing the coherence in Python<a class="headerlink" href="#on-ramp-computing-the-coherence-in-python" title="Permalink to this headline">¶</a></h2>
 <p>We begin this module with an “<em>on-ramp</em>” to analysis. The purpose of this on-ramp is to introduce you immediately to a core concept in this module: how to compute the coherence in Python. You may not understand all aspects of the program here, but that’s not the point. Instead, the purpose of this on-ramp is to illustrate what <em>can</em> be done. Our advice is to simply run the code below and see what happens …</p>
@@ -512,7 +517,7 @@
 <!-- #endregion --></div>
 <div class="section" id="autocovariance-and-cross-covariance-a-id-autocovariance-and-cross-covariance-a">
 <h3>Autocovariance and Cross-covariance <a id="Autocovariance-and-Cross-covariance"></a><a class="headerlink" href="#autocovariance-and-cross-covariance-a-id-autocovariance-and-cross-covariance-a" title="Permalink to this headline">¶</a></h3>
-<p>In <a class="reference internal" href="03.html"><span class="doc">chapter 3</span></a>, we defined and applied the autocovariance to a single time series and found that this measure helped reveal dependent structure in the data. We could, of course, apply the autocovariance to each ECoG time series considered here. Let’s do so, with a small update to the autocovariance formula that utilizes the trial structure of these data. We define the trial-averaged autocovariance as,</p>
+<p>In <a class="reference internal" href="03.html"><span class="doc">notebook 3</span></a>, we defined and applied the autocovariance to a single time series and found that this measure helped reveal dependent structure in the data. We could, of course, apply the autocovariance to each ECoG time series considered here. Let’s do so, with a small update to the autocovariance formula that utilizes the trial structure of these data. We define the trial-averaged autocovariance as,</p>
 <p><span id="eq:ac" title="trial-averaged autocovariance"></span>
 <span class="math notranslate nohighlight">\($
 r_{xx}\big[L\big] = \frac{1}{K} \sum_{k=1}^K \frac{1}{N} \sum_{n=1}^{N-L} (x_{n+L,k} - \bar{x}_k) (x_{n,k} - \bar{x}_k) \, ,
@@ -559,8 +564,8 @@ $$
 r_{xy}\big[L\big] = \frac{1}{N} \sum_{n=1}^{N-L} (x_{n+L} - \bar{x}) (y_{n} - \bar{y}) \, ,
 $$
 </span>
-<p>where <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(y\)</span> are two time series with time index <span class="math notranslate nohighlight">\(n\)</span>.  Notice what we’ve done; compared to the autocovarance defined in <a class="reference internal" href="03.html"><span class="doc">chapter 3</span></a>,<span class="thumb"><sup>eq</sup><img src="03/imgs/eq3-3.png"></span> the cross-covariance formula simply replaces the <span class="math notranslate nohighlight">\(x\)</span>’s in the second term in parentheses with <span class="math notranslate nohighlight">\(y\)</span>’s.</p>
-<p>The intuition for understanding the cross-covariance is similar to that for the autocovariance (see <a class="reference internal" href="03.html"><span class="doc">chapter 3</span></a>). To calculate the cross-covariance, we multiply <span class="math notranslate nohighlight">\(y\)</span> with <span class="math notranslate nohighlight">\(x\)</span> shifted in time by lag <span class="math notranslate nohighlight">\(L\)</span>, as illustrated here:</p>
+<p>where <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(y\)</span> are two time series with time index <span class="math notranslate nohighlight">\(n\)</span>.  Notice what we’ve done; compared to the autocovarance defined in <a class="reference internal" href="03.html"><span class="doc">notebook 3</span></a>,<span class="thumb"><sup>eq</sup><img src="03/imgs/eq3-3.png"></span> the cross-covariance formula simply replaces the <span class="math notranslate nohighlight">\(x\)</span>’s in the second term in parentheses with <span class="math notranslate nohighlight">\(y\)</span>’s.</p>
+<p>The intuition for understanding the cross-covariance is similar to that for the autocovariance (see <a class="reference internal" href="03.html"><span class="doc">notebook 3</span></a>). To calculate the cross-covariance, we multiply <span class="math notranslate nohighlight">\(y\)</span> with <span class="math notranslate nohighlight">\(x\)</span> shifted in time by lag <span class="math notranslate nohighlight">\(L\)</span>, as illustrated here:</p>
 <img src="imgs/cartoon_xc.png" style="width: 90%; max-width: 600px">
 <p>Here we show a cartoon representation of the cross-covariance between two time series <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(y\)</span>. Data <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(y\)</span> are visualized as one-dimensional vectors, <span class="math notranslate nohighlight">\(x\)</span> in black and <span class="math notranslate nohighlight">\(y\)</span> in blue. The cross-covariance at (b) lag 0, (c) lag 1, and (d) lag 2 requires different alignments between the two vectors. To compute the cross-covariance at each lag, we multiply the overlapping elements of the two vectors, and sum the product. Non-overlapping elements are not included in the computation.</p>
 <p>The cross-covariance is large at lag <span class="math notranslate nohighlight">\(L\)</span> if the two shifted time series <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(y\)</span> match. If we’re interested in determining the coupling between <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(y\)</span>, finding these matches could be particularly useful. To illustrate an application of the cross-covariance, let’s compute it between the two electrodes during the first trial of the ECoG data: <a id="fig:xc_1"></a></p>
@@ -664,7 +669,7 @@ Notice that, compared to the trial-averaged autocovariance, we have replaced the
 </div>
 <div class="section" id="trial-averaged-spectrum-a-id-trial-averaged-spectrum-a">
 <h3>Trial-Averaged Spectrum <a id="Trial-Averaged-Spectrum"></a><a class="headerlink" href="#trial-averaged-spectrum-a-id-trial-averaged-spectrum-a" title="Permalink to this headline">¶</a></h3>
-<p>One goal of this module is to characterize the relations (if any) between the data recorded at the two ECoG electrodes. To do so, let’s review a vital tool in this characterization, the Fourier transform. We defined in <a class="reference internal" href="03.html"><span class="doc">chapter 3</span></a> the Fourier transfom of a signal <span class="math notranslate nohighlight">\(x\)</span>; let’s repeat that definition here,</p>
+<p>One goal of this module is to characterize the relations (if any) between the data recorded at the two ECoG electrodes. To do so, let’s review a vital tool in this characterization, the Fourier transform. We defined in <a class="reference internal" href="03.html"><span class="doc">notebook 3</span></a> the Fourier transfom of a signal <span class="math notranslate nohighlight">\(x\)</span>; let’s repeat that definition here,</p>
 <div class="math notranslate nohighlight">
 \[
 X_j = \sum_{n=1}^N x_n \exp(-2 \pi i \, f_j \, t_n) \, .
@@ -750,8 +755,8 @@ $\)</span></p>
 </div>
 </div>
 <div class="question">
-<p><strong>Q:</strong> Are the terms frequency resolution, Nyquist frequency, and decibel familiar to you? Can you define each in words and equations?
-<strong>A:</strong> If not, we recommend reviewing the case study in <a class="reference internal" href="03.html"><span class="doc">chapter 3</span></a>.</p>
+<p><strong>Q:</strong> Are the terms frequency resolution, Nyquist frequency, and decibel familiar to you? Can you define each in words and equations?</p>
+<p><strong>A:</strong> If not, we recommend reviewing the case study in <a class="reference internal" href="03.html"><span class="doc">notebook 3</span></a>.</p>
 </div><p>The resulting trial-averaged spectrum is shown in the figure above. Compared to the example spectrum from a single trial, the variability is greatly reduced. By reducing the variability in this way, interesting structure in the data may become more apparent.</p>
 <div class="question">
 <p><strong>Q.</strong>  Upon examining the trial-averaged spectrum from one electrode, what additional conclusions can you now make about the data beyond visual inspection of the voltage traces? Repeat this computation of the trial-averaged spectrum for the second electrode. What do you find?  <em>Hint</em>: The 8 Hz peak is obvious and consistent with our visual inspection of the data. Do you notice any other (smaller) peaks in the trial-averaged spectrum?</p>
@@ -867,7 +872,7 @@ $\)</span></p>
 </ul>
 <div class="python-note">
 <p>The coherence is a measure of the phase consistency between two signals at frequency index <span class="math notranslate nohighlight">\(j\)</span> across trials.</p>
-</div><p>We note that because computing the coherence requires the Fourier transform, the notions of frequency resolution and Nyquist frequency are identical to those for the spectrum. In other words, the frequency resolution of the coherence is <span class="math notranslate nohighlight">\(1/T\)</span>, and the Nyquist frequency is half of the sampling frequency; see <a class="reference internal" href="03.html"><span class="doc">chapter 3</span></a> for details.</p>
+</div><p>We note that because computing the coherence requires the Fourier transform, the notions of frequency resolution and Nyquist frequency are identical to those for the spectrum. In other words, the frequency resolution of the coherence is <span class="math notranslate nohighlight">\(1/T\)</span>, and the Nyquist frequency is half of the sampling frequency; see <a class="reference internal" href="03.html"><span class="doc">notebook 3</span></a> for details.</p>
 <div class="question">
 <p><strong>Q.</strong> What are the units of the coherence?
 Hint: Consider <a href="#eq:cohr" class="thumb">this equation<img src="imgs/eqcohr.png"></a> for coherence and the units of the terms in the numerator and denominator. You should find that the coherence is unitless.</p>
@@ -876,7 +881,7 @@ Hint: Consider <a href="#eq:cohr" class="thumb">this equation<img src="imgs/eqco
 <hr class="docutils" />
 <div class="section" id="cross-covariance-and-cross-spectrum-a-id-cc-and-cs-a">
 <h2>Cross-Covariance and Cross-Spectrum <a id="cc_and_cs"></a><a class="headerlink" href="#cross-covariance-and-cross-spectrum-a-id-cc-and-cs-a" title="Permalink to this headline">¶</a></h2>
-<p>Although we defined the <a class="reference external" href="#eq:9">cross-spectrum</a><span class="thumb"><sup>eq</sup><img src="imgs/eq5-9.png"></span> and used it to define the <a class="reference external" href="#eq:cohr">coherence</a><span class="thumb"><sup>eq</sup><img src="imgs/eqcohr.png"></span>, the cross-spectrum may appear somewhat unmotivated. Fortunately, there is additional insight to be gained. We show in a <a class="reference external" href="03#supplements">supplement</a> at the end of chapter 3 that the spectrum is the Fourier transform of the autocovariance. Conceptually, the spectrum and autocovariance provide a frequency domain and time domain measure of a signal’s rhythms, respectively. In the same way, the cross-spectrum and cross-covariance are partners.</p>
+<p>Although we defined the <a class="reference external" href="#eq:9">cross-spectrum</a><span class="thumb"><sup>eq</sup><img src="imgs/eq5-9.png"></span> and used it to define the <a class="reference external" href="#eq:cohr">coherence</a><span class="thumb"><sup>eq</sup><img src="imgs/eqcohr.png"></span>, the cross-spectrum may appear somewhat unmotivated. Fortunately, there is additional insight to be gained. We show in a <a class="reference external" href="03#supplements">supplement</a> at the end of notebook 3 that the spectrum is the Fourier transform of the autocovariance. Conceptually, the spectrum and autocovariance provide a frequency domain and time domain measure of a signal’s rhythms, respectively. In the same way, the cross-spectrum and cross-covariance are partners.</p>
 <div class="math-note">
 <p>The cross-spectrum is the Fourier transform of the cross-covariance.</p>
 </div><p>The cross-spectrum and cross-covariance form a Fourier transform pair. The cross-spectrum is a frequency domain measure of coupling, while the cross-covariance is a time domain measure of coupling. To move back and forth between these two measures, we use the Fourier transform. In practice, we rarely examine the cross-spectrum directly; it’s a complex quantity and so requires two dimensions (i.e., the complex plane) to visualize. However, the cross-spectrum is fundamental to the coherence, so in that sense it’s an important actor in the analysis.</p>
@@ -1061,6 +1066,24 @@ Assuming that the noise term and signal <span class="math notranslate nohighligh
 </ul>
 </div>
 
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "eschlaf2/Case-Studies-Python",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            kernelName: "python3",
+            path: "."
+        }
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
 
               </div>
               

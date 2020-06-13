@@ -30,6 +30,8 @@
     <script >var togglebuttonSelector = '.toggle, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.18.0/dist/embed-amd.js"></script>
+    <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
+    <script async="async" src="_static/thebelab.js"></script>
     <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="canonical" href="https://mark-kramer.github.io/Case-Studies-Python/A04.html" />
     <link rel="shortcut icon" href="_static/favicon.ico"/>
@@ -45,7 +47,7 @@
 <meta property="og:url"         content="https://mark-kramer.github.io/Case-Studies-Python/A04.html" />
 <meta property="og:type"        content="article" />
 <meta property="og:title"       content="Training a Perceptron" />
-<meta property="og:description" content="Training a Perceptron  In this module, we will construct simple perceptron models. We’ll start by implementing a perceptron model, and seeing how it behaves. We" />
+<meta property="og:description" content="Training a Perceptron  In this notebook, we will construct simple perceptron models. We’ll start by implementing a perceptron model, and seeing how it behaves. " />
 <meta property="og:image"       content="https://mark-kramer.github.io/Case-Studies-Python/_static/logo.png" />
 
 <meta name="twitter:card" content="summary">
@@ -194,6 +196,7 @@
                 <a class="binder-button" href="https://mybinder.org/v2/gh/eschlaf2/Case-Studies-Python/master?urlpath=tree/_book/A04.ipynb"><button type="button" class="btn btn-secondary topbarbtn" title="Launch Binder" data-toggle="tooltip" data-placement="left"><img class="binder-button-logo" src="_static/images/logo_binder.svg" alt="Interact on binder">Binder</button></a>
                 
                 
+                <button type="button" class="btn btn-secondary topbarbtn thebelab-launch-button" onclick="initThebelab()" title="Launch Thebelab" data-toggle="tooltip" data-placement="left"><i class="fas fa-rocket"></i><span style="margin-left: .4em;">ThebeLab</span></button>
                 
             </div>
         </div>
@@ -254,7 +257,7 @@
                 
   <div class="section" id="training-a-perceptron">
 <h1>Training a Perceptron<a class="headerlink" href="#training-a-perceptron" title="Permalink to this headline">¶</a></h1>
-<p>In this module, we will construct simple perceptron models. We’ll start by implementing a perceptron model, and seeing how it behaves. We’ll then outline the steps to train a perceptron to classify a point as above or below a line.</p>
+<p>In this notebook, we will construct simple perceptron models. We’ll start by implementing a perceptron model, and seeing how it behaves. We’ll then outline the steps to train a perceptron to classify a point as above or below a line.</p>
 <p>This discussion follows the excellent example and discussion at <a class="reference external" href="https://natureofcode.com/book/chapter-10-neural-networks/">The Nature of Code</a>. Please see that reference for additional details, and a more sophisticated coding strategy (using Classes in Python).</p>
 <div class="section" id="preliminaries">
 <h2>Preliminaries<a class="headerlink" href="#preliminaries" title="Permalink to this headline">¶</a></h2>
@@ -263,8 +266,6 @@
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pylab</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">random</span>
-<span class="kn">import</span> <span class="nn">time</span>
 <span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
 </pre></div>
 </div>
@@ -289,13 +290,13 @@
 </div>
 </div>
 </div>
-<div class="alert alert-block alert-info">
-<p><strong>Q:</strong> How many inputs does the function take?  How many outputs does it return?<p></p></p>
-<p><strong>Q:</strong> Looking at this code, could you sketch a model of this perceptron?<p></p></p>
-<p><strong>Q:</strong> Apply this function to different sets of inputs. Consider,<p></p></p>
-<p><code class="docutils literal notranslate"><span class="pre">input1</span> <span class="pre">=</span> <span class="pre">1,</span> <span class="pre">input2</span> <span class="pre">=</span> <span class="pre">0,</span> <span class="pre">w1</span> <span class="pre">=</span> <span class="pre">0.5,</span> <span class="pre">w2</span> <span class="pre">=</span> <span class="pre">-0.5,</span> <span class="pre">theta</span> <span class="pre">=</span> <span class="pre">0</span></code><p></p></p>
-<p>and<p></p></p>
-<p><code class="docutils literal notranslate"><span class="pre">input1</span> <span class="pre">=</span> <span class="pre">1,</span> <span class="pre">input2</span> <span class="pre">=</span> <span class="pre">0,</span> <span class="pre">w1</span> <span class="pre">=</span> <span class="pre">0.5,</span> <span class="pre">w2</span> <span class="pre">=</span> <span class="pre">-0.5,</span> <span class="pre">theta</span> <span class="pre">=</span> <span class="pre">-1</span></code><p></p></p>
+<div class="question">
+<p><strong>Q:</strong> How many inputs does the function take?  How many outputs does it return?</p>
+<p><strong>Q:</strong> Looking at this code, could you sketch a model of this perceptron?</p>
+<p><strong>Q:</strong> Apply this function to different sets of inputs. Consider,</p>
+<p><code class="docutils literal notranslate"><span class="pre">input1</span> <span class="pre">=</span> <span class="pre">1,</span> <span class="pre">input2</span> <span class="pre">=</span> <span class="pre">0,</span> <span class="pre">w1</span> <span class="pre">=</span> <span class="pre">0.5,</span> <span class="pre">w2</span> <span class="pre">=</span> <span class="pre">-0.5,</span> <span class="pre">theta</span> <span class="pre">=</span> <span class="pre">0</span></code></p>
+<p>and</p>
+<p><code class="docutils literal notranslate"><span class="pre">input1</span> <span class="pre">=</span> <span class="pre">1,</span> <span class="pre">input2</span> <span class="pre">=</span> <span class="pre">0,</span> <span class="pre">w1</span> <span class="pre">=</span> <span class="pre">0.5,</span> <span class="pre">w2</span> <span class="pre">=</span> <span class="pre">-0.5,</span> <span class="pre">theta</span> <span class="pre">=</span> <span class="pre">-1</span></code></p>
 <p>What do you find?</p>
 </div></div>
 <div class="section" id="part-2-build-a-perceptron-classifier">
@@ -338,14 +339,13 @@ should return one output:</p>
 </div>
 </div>
 </div>
-<div class="alert alert-block alert-info">
-<p><strong>Q:</strong> Consider the (x,y) point,<p></p></p>
-<p><code class="docutils literal notranslate"><span class="pre">x,y</span> <span class="pre">=</span> <span class="pre">0.7,3</span></code> <p></p></p>
-<p>and the line with slope and intercept, <p></p></p>
-<p><code class="docutils literal notranslate"><span class="pre">slope</span> <span class="pre">=</span> <span class="pre">2</span></code> <br></br>
-<code class="docutils literal notranslate"><span class="pre">intercept</span> <span class="pre">=</span> <span class="pre">1</span></code><p></p></p>
-<p>Is the (x,y) point above or below the line?<p></p>
-<br></p>
+<div class="question">
+<p><strong>Q:</strong> Consider the (x,y) point,</p>
+<p><code class="docutils literal notranslate"><span class="pre">x,y</span> <span class="pre">=</span> <span class="pre">0.7,3</span></code></p>
+<p>and the line with slope and intercept,</p>
+<p><code class="docutils literal notranslate"><span class="pre">slope</span> <span class="pre">=</span> <span class="pre">2</span></code>
+<code class="docutils literal notranslate"><span class="pre">intercept</span> <span class="pre">=</span> <span class="pre">1</span></code></p>
+<p>Is the (x,y) point above or below the line?</p>
 <p><strong>A:</strong> To answer this, let’s ask our function,</p>
 </div><div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -363,8 +363,8 @@ should return one output:</p>
 </div>
 </div>
 </div>
-<div class="alert alert-block alert-info">
-<p><strong>A (Continued):</strong> We find a <code class="docutils literal notranslate"><span class="pre">correct_answer</span></code> of 1.<p></p></p>
+<div class="question">
+<p><strong>A (Continued):</strong> We find a <code class="docutils literal notranslate"><span class="pre">correct_answer</span></code> of 1.</p>
 <p>So, the point <code class="docutils literal notranslate"><span class="pre">(x,y)=(0.7,3)</span></code> is above the line with slope 2 and intercept 1.</p>
 </div></div>
 <div class="section" id="step-2-ask-perceptron-to-guess-an-answer">
@@ -404,16 +404,16 @@ and bias, determine the perceptron output). Let’s do so,</p>
 <ul class="simple">
 <li><p>the perceptron’s guess, is the point above (=1) or below (=0) the line.</p></li>
 </ul>
-<div class="alert alert-block alert-info">
-**Q:**  Again consider the (x,y) point, <p></p>
-<p><code class="docutils literal notranslate"><span class="pre">x,y</span> <span class="pre">=</span> <span class="pre">0.7,3</span></code> <p></p></p>
-<p>and set initial values for the perceptron weights. Let’s just set these all to 0.5;  our goal in the rest of this module will be to train the perceptron by adjusting these weights.  But for now,<p></p></p>
-<p><code class="docutils literal notranslate"><span class="pre">wx,wy,wb</span> <span class="pre">=</span> <span class="pre">0.5</span></code> <p></p></p>
-<p>Then, ask the perceptron for it’s guess for it’s guess, is the point above or below the line?<p></p></p>
+<div class="question">
+<p><strong>Q:</strong>  Again consider the (x,y) point,</p>
+<p><code class="docutils literal notranslate"><span class="pre">x,y</span> <span class="pre">=</span> <span class="pre">0.7,3</span></code></p>
+<p>and set initial values for the perceptron weights. Let’s just set these all to 0.5;  our goal in the rest of this notebook will be to train the perceptron by adjusting these weights.  But for now,</p>
+<p><code class="docutils literal notranslate"><span class="pre">wx,wy,wb</span> <span class="pre">=</span> <span class="pre">0.5</span></code></p>
+<p>Then, ask the perceptron for it’s guess for it’s guess, is the point above or below the line?</p>
 </div><div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="o">=</span> <span class="mf">0.7</span><span class="p">,</span><span class="mi">3</span>
-<span class="n">wx</span><span class="p">,</span><span class="n">wy</span><span class="p">,</span><span class="n">wb</span> <span class="o">=</span> <span class="mi">3</span><span class="o">*</span><span class="p">[</span><span class="mf">0.5</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="o">=</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mi">3</span>
+<span class="n">wx</span><span class="p">,</span><span class="n">wy</span><span class="p">,</span><span class="n">wb</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">]</span>
 <span class="n">perceptron_guess</span> <span class="o">=</span> <span class="n">feedforward</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">wx</span><span class="p">,</span> <span class="n">wy</span><span class="p">,</span> <span class="n">wb</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">perceptron_guess</span><span class="p">)</span>
 </pre></div>
@@ -425,9 +425,8 @@ and bias, determine the perceptron output). Let’s do so,</p>
 </div>
 </div>
 </div>
-<div class="alert alert-block alert-info">
-<p><strong>A (Continued):</strong> We find a <code class="docutils literal notranslate"><span class="pre">peceptron_guess</span></code> of 1.<br></p>
-<p>
+<div class="question">
+<p><strong>A (Continued):</strong> We find a <code class="docutils literal notranslate"><span class="pre">peceptron_guess</span></code> of 1.</p>
 <p>So, the perceptron guesses that the point <code class="docutils literal notranslate"><span class="pre">(x,y)=(0.7,3)</span></code> is above the line.</p>
 </div></div>
 <div class="section" id="step-3-compute-the-error">
@@ -452,8 +451,8 @@ two ways:</p>
 </div>
 </div>
 </div>
-<div class="alert alert-block alert-info">
-**Q:**  What do you find for the `error`? Does it make sense?
+<div class="question">
+<p><strong>Q:</strong>  What do you find for the <code class="docutils literal notranslate"><span class="pre">error</span></code>? Does it make sense?</p>
 </div></div>
 <div class="section" id="step-4-adjust-all-weights-according-to-the-error">
 <h3>Step 4: Adjust all weights according to the error.<a class="headerlink" href="#step-4-adjust-all-weights-according-to-the-error" title="Permalink to this headline">¶</a></h3>
@@ -479,8 +478,8 @@ two ways:</p>
 </div>
 </div>
 <p>Notice that, in the update to <code class="docutils literal notranslate"><span class="pre">wb</span></code> we use the fact that the bias equals 1.</p>
-<div class="alert alert-block alert-info">
-**Q:**  What do you find for the new weights? Does it make sense?
+<div class="question">
+<p><strong>Q:</strong>  What do you find for the new weights? Does it make sense?</p>
 </div></div>
 <div class="section" id="step-5-return-to-step-1-and-repeat">
 <h3>Step 5: Return to Step 1 and repeat …<a class="headerlink" href="#step-5-return-to-step-1-and-repeat" title="Permalink to this headline">¶</a></h3>
@@ -508,8 +507,8 @@ make this efficient,</p>
 <span class="n">estimated_intercept</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="mi">2000</span><span class="p">)</span>
 
 <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">arange</span><span class="p">(</span><span class="mi">2000</span><span class="p">):</span>           <span class="c1"># For 2000 iteractions,</span>
-    <span class="n">x</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>         <span class="c1"># Choose a random (x,y) point in the plane</span>
-    <span class="n">y</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">randn</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>         <span class="c1"># Choose a random (x,y) point in the plane</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">randn</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
                                     <span class="c1"># Step 1: Calculate known answer.</span>
     <span class="n">correct_answer</span> <span class="o">=</span> <span class="n">known_answer</span><span class="p">(</span><span class="n">slope</span><span class="p">,</span> <span class="n">intercept</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">);</span>
     
@@ -550,6 +549,24 @@ make this efficient,</p>
 </div>
 </div>
 
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "eschlaf2/Case-Studies-Python",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            kernelName: "python3",
+            path: "."
+        }
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
 
               </div>
               

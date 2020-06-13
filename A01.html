@@ -30,6 +30,8 @@
     <script >var togglebuttonSelector = '.toggle, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.18.0/dist/embed-amd.js"></script>
+    <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
+    <script async="async" src="_static/thebelab.js"></script>
     <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="canonical" href="https://mark-kramer.github.io/Case-Studies-Python/A01.html" />
     <link rel="shortcut icon" href="_static/favicon.ico"/>
@@ -46,7 +48,7 @@
 <meta property="og:url"         content="https://mark-kramer.github.io/Case-Studies-Python/A01.html" />
 <meta property="og:type"        content="article" />
 <meta property="og:title"       content="Backpropagation" />
-<meta property="og:description" content="Backpropagation  In this module, we will implement the backpropagation procedure for a two-node network. We’ll start by implementing each step of the backpropag" />
+<meta property="og:description" content="Backpropagation  In this notebook, we will implement the backpropagation procedure for a two-node network. We’ll start by implementing each step of the backprop" />
 <meta property="og:image"       content="https://mark-kramer.github.io/Case-Studies-Python/_static/logo.png" />
 
 <meta name="twitter:card" content="summary">
@@ -195,6 +197,7 @@
                 <a class="binder-button" href="https://mybinder.org/v2/gh/eschlaf2/Case-Studies-Python/master?urlpath=tree/_book/A01.ipynb"><button type="button" class="btn btn-secondary topbarbtn" title="Launch Binder" data-toggle="tooltip" data-placement="left"><img class="binder-button-logo" src="_static/images/logo_binder.svg" alt="Interact on binder">Binder</button></a>
                 
                 
+                <button type="button" class="btn btn-secondary topbarbtn thebelab-launch-button" onclick="initThebelab()" title="Launch Thebelab" data-toggle="tooltip" data-placement="left"><i class="fas fa-rocket"></i><span style="margin-left: .4em;">ThebeLab</span></button>
                 
             </div>
         </div>
@@ -245,7 +248,7 @@
                 
   <div class="section" id="backpropagation">
 <h1>Backpropagation<a class="headerlink" href="#backpropagation" title="Permalink to this headline">¶</a></h1>
-<p>In this module, we will implement the backpropagation procedure for a two-node network. We’ll start by implementing each step of the backpropagation procedure, and then combine these steps together to create a complete backpropagation algorithm.</p>
+<p>In this notebook, we will implement the backpropagation procedure for a two-node network. We’ll start by implementing each step of the backpropagation procedure, and then combine these steps together to create a complete backpropagation algorithm.</p>
 <div class="section" id="preliminaries">
 <h2>Preliminaries<a class="headerlink" href="#preliminaries" title="Permalink to this headline">¶</a></h2>
 <p>Text preceded by a <code class="docutils literal notranslate"><span class="pre">#</span></code> indicates a ‘comment’.  I will use comments to explain what we’re doing and to ask you questions.  Also, comments are useful in your own code to note what you’ve done (so it makes sense when you return to the code in the future).  It’s a good habit to <em>always</em> comment your code.  I’ll try to set a good example, but won’t always …</p>
@@ -475,6 +478,24 @@ code above inside a <code class="docutils literal notranslate"><span class="pre"
 </div>
 </div>
 
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "eschlaf2/Case-Studies-Python",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            kernelName: "python3",
+            path: "."
+        }
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
 
               </div>
               
